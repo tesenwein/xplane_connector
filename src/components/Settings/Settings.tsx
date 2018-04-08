@@ -1,10 +1,12 @@
 import * as React from 'react';
-import { ConfigManager, ConfigRecordInterface } from '../../lib/ConfigManager';
 import * as PouchDB from 'pouchdb';
-import ConfigStore from '../../stores/ConfigStore';
-
 import { remote } from 'electron';
+import { ConfigManager, ConfigRecordInterface } from '../../lib/ConfigManager';
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+
+import ConfigStore from '../../flux/stores/ConfigStore';
+import ConfigAction from '../../flux/actions/ConfigActions'
+
 
 const dialog = remote.dialog;
 
@@ -23,14 +25,7 @@ export class Settings extends React.Component<any, any> {
 
     public async onXlanePathSelect() {
         const result = await dialog.showOpenDialog({ properties: ['openDirectory'] });
-        this.setState({ xplanepath: result[0] });
-
-        const config: ConfigRecordInterface = {
-            name: 'xplanepath',
-            value: this.state.xplanepath
-        };
-
-        //ConfigManager.setConfig(config)
+        ConfigAction.setConfig('xplanepath',result[0])
     }
 
     public render() {
