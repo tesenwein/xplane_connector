@@ -6,7 +6,7 @@ const spawn = require('child_process').spawn;
 const baseConfig = require('./webpack.renderer.config');
 
 module.exports = merge.smart(baseConfig, {
-    entry: ['react-hot-loader/patch', './src/app.tsx'],
+    entry: ['react-hot-loader/patch', './src/index.tsx'],
     module: {
         rules: [
             {
@@ -20,10 +20,10 @@ module.exports = merge.smart(baseConfig, {
     plugins: [new webpack.NamedModulesPlugin(), new webpack.HotModuleReplacementPlugin()],
     devServer: {
         port: 2003,
-        compress: true,
+        compress: false,
         noInfo: true,
         stats: 'errors-only',
-        inline: true,
+        inline: false,
         hot: true,
         headers: { 'Access-Control-Allow-Origin': '*' },
         historyApiFallback: {

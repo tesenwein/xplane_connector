@@ -1,12 +1,17 @@
-import 'bootstrap';
-import './app.scss';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 
-import CurrentTime from './components/CurrentTime';
+import Header from './components/Header/Header';
+import Main from './components/Main/Main';
 
-const mainElement = document.createElement('div');
+const App = () => (
+    <div>
+        <Header />
 
-document.body.appendChild(mainElement);
-
-ReactDOM.render(<CurrentTime />, mainElement);
+        <div className="container">
+            <div className="col-sm">
+                <Main />
+            </div>
+        </div>
+    </div>
+);
+export default App;
