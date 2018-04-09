@@ -1,9 +1,9 @@
-import { EventEmitter } from 'events';
-import dispatcher from '../dispatcher'
-import { Dispatcher } from 'flux';
-import * as Configstore from 'configstore';
+import { EventEmitter } from "events";
+import dispatcher from "../dispatcher"
+import { Dispatcher } from "flux";
+import * as Configstore from "configstore";
 
-import { ConfigID, SetConfigInterface } from '../actions/ConfigAction'
+import { ConfigID, SetConfigInterface } from "../actions/ConfigAction"
 
 export class ConfigStoreStatic extends EventEmitter {
     
@@ -12,7 +12,7 @@ export class ConfigStoreStatic extends EventEmitter {
 
     public constructor() {
         super()
-        this.store = new Configstore('xplane-connector-main')
+        this.store = new Configstore("xplane-connector-main")
     }
 
     public setConfig(name: string, value: any) {

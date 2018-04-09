@@ -1,19 +1,23 @@
-import { BrowserRouter, Redirect } from 'react-router-dom';
-import * as React from 'react';
+import { BrowserRouter, Redirect } from "react-router-dom";
+import * as React from "react";
 
-import Header from './components/Header/Header';
-import Main from './components/Main/Main';
+import Header from "./components/Header/Header";
+import Main from "./components/Main/Main";
+import ConfigStore from "./flux/stores/ConfigStore"
 
-const App = () => (    
+import "./app.scss";
+
+
+//Setting some main Configurations
+ConfigStore.setConfig("xplane.airports", "\\Custom Data\\GNS430\\navdata\\Airports.txt");
+
+
+const App = () => (
     <BrowserRouter basename="/">
         <div>
             <Header />
             <div className="container-fluid main-container">
-                <div className="row">
-                    <div className="col-sm">
-                        <Main />
-                    </div>
-                </div>
+                <Main />
             </div>
         </div>
     </BrowserRouter>

@@ -1,8 +1,8 @@
-import * as React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import * as React from "react";
+import { Switch, Route } from "react-router-dom";
 
-import Home from '../Home/Home';
-import Settings from '../Settings/Settings';
+import Home from "../Home/Home";
+import Settings from "../Settings/Settings";
 
 const Main = () => (
     <main>

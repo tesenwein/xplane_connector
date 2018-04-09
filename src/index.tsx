@@ -1,11 +1,10 @@
-import 'bootstrap';
-import './app.scss';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import "bootstrap";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
-import App from './App';
+import App from "./App";
 
-const mainElement = document.createElement('div');
+const mainElement = document.createElement("div");
 document.body.appendChild(mainElement);
 
 ReactDOM.render(
