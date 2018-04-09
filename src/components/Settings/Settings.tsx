@@ -33,7 +33,10 @@ export class Settings extends React.Component<any, any> {
 
     public async onXlanePathSelect() {
         const result = await dialog.showOpenDialog({ properties: ["openDirectory"] });
-        ConfigAction.setConfig("xplane.path", result[0])
+
+        if (result.length == 1) {
+            ConfigAction.setConfig("xplane.path", result[0])
+        }
     }
 
     public render() {
