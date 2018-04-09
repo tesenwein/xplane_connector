@@ -20,10 +20,10 @@ module.exports = merge.smart(baseConfig, {
     plugins: [new webpack.NamedModulesPlugin(), new webpack.HotModuleReplacementPlugin()],
     devServer: {
         port: 2003,
-        compress: false,
+        compress: true,
         noInfo: true,
         stats: 'errors-only',
-        inline: false,
+        inline: true,
         hot: true,
         headers: { 'Access-Control-Allow-Origin': '*' },
         historyApiFallback: {

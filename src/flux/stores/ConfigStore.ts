@@ -1,27 +1,27 @@
 import { EventEmitter } from 'events';
 import dispatcher from '../dispatcher'
 import { Dispatcher } from 'flux';
+import * as Configstore from 'configstore';
 
-import { ConfigID, SetConfigInterface } from '../actions/ConfigActions'
+import { ConfigID, SetConfigInterface } from '../actions/ConfigAction'
 
 export class ConfigStoreStatic extends EventEmitter {
-    private configs: any = {};
+    
+
+    private store:Configstore;
 
     public constructor() {
-        super();
-
-        this.configs = {
-            xplanepath: 'C:\\X-Plane 11'
-        };
+        super()
+        this.store = new Configstore('xplane-connector-main')
     }
 
     public setConfig(name: string, value: any) {
-        this.configs[name] = value;
-        this.emit('change');
+        this.store.set(name, value)
+        this.emit("change")
     }
-
-    public getAll() {
-        return this.configs;
+    
+    public getConfig(name:string){
+        return this.store.get(name)
     }
 
     public handleActions(action:SetConfigInterface){

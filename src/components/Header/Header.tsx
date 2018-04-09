@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 import {
     Collapse,
@@ -8,7 +8,6 @@ import {
     NavbarBrand,
     Nav,
     NavItem,
-    NavLink,
     UncontrolledDropdown,
     DropdownToggle,
     DropdownMenu,
@@ -42,10 +41,10 @@ export class Header extends React.Component<any, any> {
                     <Collapse isOpen={this.state.isOpen} navbar>
                         <Nav className="ml-auto" navbar>
                             <NavItem>
-                                <NavLink href="/">Home</NavLink>
+                                <NavLink className="nav-link" to="/">Home</NavLink>
                             </NavItem>
                             <NavItem>
-                                <NavLink href="/settings">Settings</NavLink>
+                                <NavLink className="nav-link" to="/settings">Settings</NavLink>
                             </NavItem>
                             <UncontrolledDropdown nav inNavbar>
                                 <DropdownToggle nav caret>

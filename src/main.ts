@@ -19,7 +19,7 @@ const createWindow = async () => {
         await installExtensions();
     }
 
-    win = new BrowserWindow({ width: 800, height: 600 });
+    win = new BrowserWindow({ width: 1024, height: 600 });
 
     if (process.env.NODE_ENV !== 'production') {
         win.loadURL(`http://localhost:2003`);
