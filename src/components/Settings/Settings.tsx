@@ -16,6 +16,7 @@ export interface SettingsPathProps {
 export interface SettingsPathState {
     xplanepath: string
     aiportsImported: string
+    aiportsImportedDisabled: boolean
 }
 
 
@@ -51,12 +52,13 @@ export class Settings extends React.Component<SettingsPathProps, SettingsPathSta
 
     public async onAirportDataImport() {
 
+        this.setState({ aiportsImported: "warning", aiportsImportedDisabled: true })
         Importer.loadAiprotData().then(() => {
-            this.setState({ aiportsImported: "success"})
-            setTimeout(()=>{
-                this.setState({ aiportsImported: "secondary"})
-            },3000)
-        }).catch((e)=>{
+            this.setState({ aiportsImported: "success" })
+            setTimeout(() => {
+                this.setState({ aiportsImported: "secondary" , aiportsImportedDisabled:false})
+            }, 3000)
+        }).catch((e) => {
             console.log(e)
         })
     }
@@ -99,7 +101,7 @@ export class Settings extends React.Component<SettingsPathProps, SettingsPathSta
                 </div>
                 <div className="row">
                     <div className="col-sm">
-                        <Button color={this.state.aiportsImported} onClick={() => this.onAirportDataImport()}>Import Airports</Button>
+                        <Button disabled={this.state.aiportsImportedDisabled} color={this.state.aiportsImported} onClick={() => this.onAirportDataImport()}>Import Airports</Button>
                     </div>
                 </div>
             </div>

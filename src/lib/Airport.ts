@@ -28,10 +28,8 @@ export default class Airport {
     public static async find(search: string) {
 
         return AirportsDB.find({
-            selector: {
-              name: {$eq: search},
-              icao: {$eq: search}
-            }
+            selector: { name: search, icao:search },
+            fields: ['icao', 'name']
         })
 
     }
@@ -50,8 +48,6 @@ export default class Airport {
                 doc.name = this.name
                 doc.freq = this.freq
 
-                console.log(doc)
-
                 AirportsDB.put(doc).then(() => {
                     resolve(true)
                 }).catch((e) => {
@@ -67,7 +63,6 @@ export default class Airport {
                     freq: this.freq
                 }
 
-                console.log(doc)
                 AirportsDB.put<dbAiport>(doc).then(() => {
                     resolve(true)
                 }).catch((e) => {

@@ -32,6 +32,8 @@ export default class Search extends React.Component<SearchProps, SearchState> {
         console.log("search",event.target.value)
         Airport.find(event.target.value).then((rec)=>{
             console.log(rec)
+        }).catch((e)=>{
+            console.log(e)
         });
     }
 
