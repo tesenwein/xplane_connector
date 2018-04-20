@@ -1,5 +1,27 @@
-import * as React from 'react';
+import * as React from "react";
 
-const Home = () => <div>Welcome To the Xplane-Connector</div>;
+import Search from "../Airport/Search"
 
-export default Home;
+export interface HomeProps {
+}
+
+export interface HomeState {
+}
+
+export default class Home extends React.Component<HomeProps, HomeState> {
+
+    public constructor(props: HomeProps) {
+        super(props);
+    }
+
+    public render() {
+
+        return (
+            <div className="row">
+                <div className="col-sm">
+                    <Search />
+                </div>
+            </div>
+        );
+    }
+}

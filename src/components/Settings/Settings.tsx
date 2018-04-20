@@ -53,7 +53,6 @@ export class Settings extends React.Component<SettingsPathProps, SettingsPathSta
 
         Importer.loadAiprotData().then(() => {
             this.setState({ aiportsImported: "success"})
-
             setTimeout(()=>{
                 this.setState({ aiportsImported: "secondary"})
             },3000)

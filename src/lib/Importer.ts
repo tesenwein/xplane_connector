@@ -15,14 +15,16 @@ export default class Importer {
         let promises:Array<Promise<boolean>> = []
 
         let airportData = fs.readFileSync(ConfigStore.getConfig("xplane.path") + ConfigStore.getConfig("xplane.airports"))
-        let airportDataArray = airportData.toString().split("\n\n")
+        let airportDataArray = airportData.toString().split("A,")
+
+        airportDataArray.splice(0, 1);
 
         for (let i in airportDataArray) {
-
+         
             let aiportData = airportDataArray[i].split("\n")
 
             let airportLine = aiportData[0].split(",")
-            let apt = new Airport(airportLine[1])
+            let apt = new Airport(airportLine[0])
 
             //lets remove the Airport info
             aiportData.splice(0, 1);
@@ -30,7 +32,7 @@ export default class Importer {
             //runway loop
             for (let x in aiportData) {
                 let runwayData = aiportData[x].split(",")
-                let runway = new Runway(apt.icao, runwayData[1])
+                let runway = new Runway(apt.icao, runwayData[0])
                 runway.length = parseInt(runwayData[4])
             }
 
