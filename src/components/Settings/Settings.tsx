@@ -4,15 +4,25 @@ import { Button, Form, FormGroup, Label, Input, FormText } from "reactstrap";
 
 import ConfigStore from "../../flux/stores/ConfigStore"
 import ConfigAction from "../../flux/actions/ConfigAction"
+import Importer from "../../lib/Importer"
 
 import CheckXplanePath from "./CheckXplanePath"
 
 const dialog = remote.dialog;
 
-export class Settings extends React.Component<any, any> {
+export interface SettingsPathProps {
+}
+
+export interface SettingsPathState {
+    xplanepath: string
+    aiportsImported: string
+}
+
+
+export class Settings extends React.Component<SettingsPathProps, SettingsPathState> {
+
     public constructor(props: any) {
         super(props);
-        this.state = {}
     }
 
     public componentWillMount() {
@@ -39,6 +49,19 @@ export class Settings extends React.Component<any, any> {
         }
     }
 
+    public async onAirportDataImport() {
+
+        Importer.loadAiprotData().then(() => {
+            this.setState({ aiportsImported: "success"})
+
+            setTimeout(()=>{
+                this.setState({ aiportsImported: "secondary"})
+            },3000)
+        }).catch((e)=>{
+            console.log(e)
+        })
+    }
+
     public render() {
         return (
             <div>
@@ -49,9 +72,10 @@ export class Settings extends React.Component<any, any> {
                 </div>
                 <div className="row">
                     <div className="col-sm">
-                        <Form inline>
-                            <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-                                <Label className="mr-sm-2" for="xplanepath">Path to X-Plane:</Label>
+                        <CheckXplanePath />
+                        <Form>
+                            <FormGroup>
+                                <Label for="xplanepath">Path to X-Plane:</Label>
                                 <Input
                                     type="text"
                                     name="xplanepath"
@@ -60,15 +84,25 @@ export class Settings extends React.Component<any, any> {
                                     value={this.state.xplanepath}
                                 />
                             </FormGroup>
-                            <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+
+                            <FormGroup>
                                 <Button color="primary" onClick={() => this.onXlanePathSelect()}>
                                     Select path
-                        </Button>
+                                </Button>
                             </FormGroup>
                         </Form>
                     </div>
                 </div>
-                <CheckXplanePath />
+                <div className="row">
+                    <div className="col-sm">
+                        <h4>Actions</h4>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-sm">
+                        <Button color={this.state.aiportsImported} onClick={() => this.onAirportDataImport()}>Import Airports</Button>
+                    </div>
+                </div>
             </div>
         );
     }
