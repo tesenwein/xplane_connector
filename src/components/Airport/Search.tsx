@@ -1,59 +1,82 @@
 import * as React from "react";
-import { Alert } from "reactstrap"
-import { Button, Form, FormGroup, Label, Input, FormText } from "reactstrap";
+import { Form, FormGroup, Input, Label } from "reactstrap";
+import Airport, { AirportInterface } from "../../lib/Airport";
+import "./Search.scss";
+import ShortInfo from "./ShortInfo";
 
-import "./Search.scss"
 
-import ConfigStore from "../../flux/stores/ConfigStore";
-import Airport from "../../lib/Airport"
 
 export interface SearchProps {
 }
 
 export interface SearchState {
-    searchstring:string
+    searchstring: string
+    airports: Array<AirportInterface>
 }
+
 
 export default class Search extends React.Component<SearchProps, SearchState> {
 
+    private timeOutCheck: any
+
     public constructor(props: SearchProps) {
         super(props);
+        this.onSearch = this.onSearch.bind(this);
 
         this.state = {
-            searchstring: ""
+            searchstring: "",
+            airports: []
         }
-
-        
-        this.onSearch = this.onSearch.bind(this);
     }
 
-    public onSearch(event:React.ChangeEvent<HTMLInputElement>){
-        this.setState({searchstring:event.target.value})
-        console.log("search",event.target.value)
-        Airport.find(event.target.value).then((rec)=>{
-            console.log(rec)
-        }).catch((e)=>{
-            console.log(e)
-        });
+    public onSearch(event: React.ChangeEvent<HTMLInputElement>) {
+        this.setState({ searchstring: event.target.value })
+
+        if (this.state.searchstring.length > 2) {
+            if (this.timeOutCheck) clearTimeout(this.timeOutCheck);
+            this.timeOutCheck = setTimeout(() => {
+                Airport.find(this.state.searchstring).then((rec) => {
+                    console.log(rec.docs.length)
+                    this.setState({ airports: rec.docs })
+                }).catch((e) => {
+                    console.log(e)
+                });
+            }, 200)
+        }
     }
 
     public render() {
 
+        let rows: JSX.Element[] = []
+        let counter = 0;
+
+        this.state.airports.map((airportItem) => {
+            rows.push(<ShortInfo key={airportItem.toString()+counter} airport={airportItem} />);
+            counter++
+        });
+
         return (
-            <div className="row">
-                <div className="col-sm">
-                    <Form>
-                        <FormGroup>
-                            <Label for="search">Search:</Label>
-                            <Input
-                                type="text"
-                                name="searchstring"
-                                id="searchstring"
-                                onChange={(e) => this.onSearch(e) }
-                                value={this.state.searchstring}
-                            />
-                        </FormGroup>
-                    </Form>
+            <div>
+                <div className="row">
+                    <div className="col-sm">
+                        <Form>
+                            <FormGroup>
+                                <Label for="search">Search:</Label>
+                                <Input
+                                    type="text"
+                                    name="searchstring"
+                                    id="searchstring"
+                                    onChange={this.onSearch}
+                                    value={this.state.searchstring}
+                                />
+                            </FormGroup>
+                        </Form>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-sm">
+                        {rows}
+                    </div>
                 </div>
             </div>
         );

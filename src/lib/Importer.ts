@@ -1,46 +1,65 @@
-import * as fs from 'fs';
-
-import Airport from './Airport';
-import Runway from './Runway';
-
+import * as LineByLineReader from 'line-by-line';
 import ConfigStore from "../flux/stores/ConfigStore";
-
+import Airport, { AirportsDB } from './Airport';
+import AptDatReader from "../lib/AptDatReader"
 
 
 export default class Importer {
 
 
-    public static async loadAiprotData() {
+    public static async loadAiprotData(): Promise<boolean[]> {
 
+        let AirportDat = new AptDatReader();
+        await AirportDat.createAirportIndex()
+
+        //await Airport.cleanDatabase()
+        let lastAirport = null;
+        let lr = new LineByLineReader(ConfigStore.getConfig("xplane.path") + ConfigStore.getConfig("xplane.airports"))
         let promises: Array<Promise<boolean>> = []
 
-        let airportData = fs.readFileSync(ConfigStore.getConfig("xplane.path") + ConfigStore.getConfig("xplane.airports"))
-        let airportDataArray = airportData.toString().split(/\n\s*\n/)
+        let lrPromise = new Promise<boolean>((resolve, reject) => {
 
-        for (let i in airportDataArray) {
+            lr.on("line", (line: string) => {
 
-            let aiportData = airportDataArray[i].split("\n")
+                if (line.startsWith("A,")) {
+                    let aiportData = line.split(",")
+                    let apt = new Airport(aiportData[1])
+                    apt.name = aiportData[2]
+                    apt.lat = aiportData[3]
+                    apt.lon = aiportData[4]
 
-            let airportLine = aiportData[0].split(",")
+                    //get Dat information
+                    AirportDat.getAirportData(apt.icao).then((data)=>{
+                        
+                        promises.push(apt.save())
+                    })
 
-            if (airportLine[0] == "A") {
-                let apt = new Airport(airportLine[1])
-                apt.name = airportLine[2]
+                    lastAirport = apt.icao
 
-                //lets remove the Airport info
-                aiportData.splice(0, 1);
-
-                //runway loop
-                for (let x in aiportData) {
-                    let runwayData = aiportData[x].split(",")
-                    let runway = new Runway(apt.icao, runwayData[0])
-                    runway.length = parseInt(runwayData[4])
                 }
+            });
 
-                promises.push(apt.save())
-            }
+            lr.on("end", () => {
+                resolve(true)
+            })
 
-        }
+            lr.on("error", (err) => {
+                reject(err)
+            })
+        });
+
+        promises.push(lrPromise);
+
+        let clPromise = new Promise<boolean>((resolve, reject) => {
+            AirportsDB.compact().then(() => {
+                resolve(true)
+            }).catch((err) => {
+                reject(err)
+            })
+        });
+
+
+        promises.push(clPromise)
 
         return Promise.all(promises)
     }

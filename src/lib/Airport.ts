@@ -1,22 +1,25 @@
 import * as PouchDB from 'pouchdb-browser';
-import * as Crypto from 'crypto';
 
 
-interface dbAiport {
+export interface AirportInterface {
     _id: string
     _rev?: string
     icao: string
     name: string
-    freq: string
+    freq?: string
+    lat: string
+    lon: string
 }
 
 export default class Airport {
 
-
-    public icao: string
     public _id: string
+    public icao: string
     public name: string = ""
     public freq: string = ""
+    public lat: string = ""
+    public lon: string = ""
+
 
     public constructor(icao: string) {
 
@@ -25,16 +28,39 @@ export default class Airport {
 
     }
 
-    public static async find(search: string) {
+    public static async find(search: string, limit: number = 20): Promise<PouchDB.Find.FindResponse<any>> {
 
-        return AirportsDB.find({
+        let searchConfig: PouchDB.Find.FindRequest<AirportInterface> = {
             selector: {
-                _id: { $gte: null },
-                name: { $regex: RegExp(search, "i") },
-                icao: { $regex: RegExp(search, "i") }
+                $or: [
+                    { name: { $regex: RegExp(search, "i") } },
+                    { icao: { $regex: RegExp(search, "i") } }
+                ]
+
             },
-            fields: ['icao', 'name']
-        })
+            fields: ['icao', 'name'],
+            limit: 100
+        }
+
+        return AirportsDB.find(searchConfig)
+
+    }
+
+    public static cleanDatabase(): Promise<boolean> {
+
+        return new Promise<boolean>((resolve, reject) => {
+
+            AirportsDB.allDocs().then(function (result) {
+                return Promise.all(result.rows.map(function (row) {
+                    return AirportsDB.remove(row.id, row.value.rev);
+                }));
+            }).then(function () {
+                resolve(true)
+            }).catch(function (err) {
+                reject(err)
+            });
+
+        });
 
     }
 
@@ -45,12 +71,14 @@ export default class Airport {
 
             let result: PouchDB.Core.Response;
 
-            AirportsDB.get<dbAiport>(this._id).then((doc) => {
+            AirportsDB.get<AirportInterface>(this._id).then((doc) => {
 
                 doc._id = this._id
                 doc.icao = this.icao
                 doc.name = this.name
                 doc.freq = this.freq
+                doc.lat = this.lat
+                doc.lon = this.lon
 
                 AirportsDB.put(doc).then(() => {
                     resolve(true)
@@ -60,14 +88,17 @@ export default class Airport {
 
             }).catch((e) => {
 
-                let doc: dbAiport = {
+                let doc: AirportInterface = {
                     _id: this._id,
                     icao: this.icao,
                     name: this.name,
-                    freq: this.freq
+                    freq: this.freq,
+                    lat: this.lat,
+                    lon: this.lon
                 }
 
-                AirportsDB.put<dbAiport>(doc).then(() => {
+
+                AirportsDB.put<AirportInterface>(doc).then(() => {
                     resolve(true)
                 }).catch((e) => {
                     reject(e)
@@ -80,7 +111,7 @@ export default class Airport {
 };
 
 // Init Database
-const AirportsDB = new PouchDB('airports')
+export const AirportsDB = new PouchDB('airports')
 PouchDB.plugin(require('pouchdb-find').default)
 AirportsDB.createIndex({
     index: { fields: ['icao', 'name'] }
