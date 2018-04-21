@@ -28,7 +28,11 @@ export default class Airport {
     public static async find(search: string) {
 
         return AirportsDB.find({
-            selector: { name: search, icao:search },
+            selector: {
+                _id: { $gte: null },
+                name: { $regex: RegExp(search, "i") },
+                icao: { $regex: RegExp(search, "i") }
+            },
             fields: ['icao', 'name']
         })
 
