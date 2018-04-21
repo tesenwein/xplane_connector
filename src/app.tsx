@@ -1,11 +1,9 @@
-import { BrowserRouter, Redirect } from "react-router-dom";
 import * as React from "react";
-
+import { BrowserRouter } from "react-router-dom";
+import "./app.scss";
 import Header from "./components/Header/Header";
 import Main from "./components/Main/Main";
-import ConfigStore from "./flux/stores/ConfigStore"
-
-import "./app.scss";
+import ConfigStore from "./lib/ConfigStore";
 
 
 //Setting some main Configurations
@@ -22,4 +20,5 @@ const App = () => (
         </div>
     </BrowserRouter>
 );
+
 export default App;

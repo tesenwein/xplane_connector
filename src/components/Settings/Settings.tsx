@@ -2,11 +2,10 @@ import * as React from "react";
 import { remote } from "electron";
 import { Button, Form, FormGroup, Label, Input, FormText } from "reactstrap";
 
-import ConfigStore from "../../flux/stores/ConfigStore"
-import ConfigAction from "../../flux/actions/ConfigAction"
+import ConfigStore from "../../lib/ConfigStore"
 import Importer from "../../lib/Importer"
 
-import CheckXplanePath from "./CheckXplanePath"
+import CheckPath from "./CheckPath"
 
 const dialog = remote.dialog;
 
@@ -23,20 +22,15 @@ export interface SettingsPathState {
 export class Settings extends React.Component<SettingsPathProps, SettingsPathState> {
 
     public constructor(props: any) {
-        super(props);
+        super(props);               
+        this.onXlanePathSelect = this.onXlanePathSelect.bind(this);
     }
 
     public componentWillMount() {
-
         this.rebuildConfig();
-
-        ConfigStore.on("change", () => {
-            this.rebuildConfig()
-        });
     }
 
     public rebuildConfig() {
-
         this.setState({
             "xplanepath": ConfigStore.getConfig("xplane.path")
         })
@@ -46,7 +40,8 @@ export class Settings extends React.Component<SettingsPathProps, SettingsPathSta
         const result = await dialog.showOpenDialog({ properties: ["openDirectory"] });
 
         if (result.length == 1) {
-            ConfigAction.setConfig("xplane.path", result[0])
+            ConfigStore.setConfig("xplane.path", result[0])
+            this.setState({xplanepath:result[0]})
         }
     }
 
@@ -73,7 +68,7 @@ export class Settings extends React.Component<SettingsPathProps, SettingsPathSta
                 </div>
                 <div className="row">
                     <div className="col-sm">
-                        <CheckXplanePath />
+                        <CheckPath path={this.state.xplanepath + "/" + ConfigStore.getConfig("xplane.airports")} message="Airports Found" />
                         <Form>
                             <FormGroup>
                                 <Label for="xplanepath">Path to X-Plane:</Label>
@@ -87,7 +82,7 @@ export class Settings extends React.Component<SettingsPathProps, SettingsPathSta
                             </FormGroup>
 
                             <FormGroup>
-                                <Button color="primary" onClick={() => this.onXlanePathSelect()}>
+                                <Button color="primary" onClick={this.onXlanePathSelect}>
                                     Select path
                                 </Button>
                             </FormGroup>

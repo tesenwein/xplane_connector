@@ -1,7 +1,5 @@
 import * as LineByLineReader from 'line-by-line';
-import ConfigStore from "../flux/stores/ConfigStore";
-import { DataManagerInterface } from '../flux/actions/DataManagerActions';
-
+import ConfigStore from "../lib/ConfigStore";
 
 export interface AptDataReaderInterface {
     icao?: string

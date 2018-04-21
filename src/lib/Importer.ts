@@ -1,5 +1,5 @@
 import * as LineByLineReader from 'line-by-line';
-import ConfigStore from "../flux/stores/ConfigStore";
+import ConfigStore from "../lib/ConfigStore";
 import Airport, { AirportsDB } from './Airport';
 import AptDatReader from "../lib/AptDatReader"
 
