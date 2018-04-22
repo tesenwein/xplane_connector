@@ -1,7 +1,7 @@
-import * as React from "react";
-import { AirportInterface } from "../../lib/Airport";
-import "./ShortInfo.scss";
-
+import * as React from "react"
+import { Link } from 'react-router-dom'
+import { AirportInterface } from "../../lib/Airport"
+import "./ShortInfo.scss"
 
 
 export interface ShortInfoProps {
@@ -22,11 +22,16 @@ export default class ShortInfo extends React.Component<ShortInfoProps, ShortInfo
 
         return (
             <div className="row">
-                <div className="col-sm">
+                <div className="col-sm-2">
                     {this.props.airport.icao}
                 </div>
                 <div className="col-sm">
                     {this.props.airport.name}
+                </div>
+                <div className="col-sm-1">
+                    <Link to={{
+                        pathname: "/airport/"+this.props.airport.icao
+                    }}>Details</Link>
                 </div>
             </div>
         );
