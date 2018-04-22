@@ -22,6 +22,9 @@ export default class Details extends React.Component<DetailsProps, DetailsStates
     }
 
     public render() {
+
+        
+
         return (
             <div>
                 Details

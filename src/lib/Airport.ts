@@ -6,19 +6,19 @@ export interface AirportInterface {
     _rev?: string
     icao: string
     name: string
+    lat: number
+    lon: number
     freq?: string
-    lat: string
-    lon: string
 }
 
-export default class Airport {
+export default class Airport implements AirportInterface {
 
-    public _id: string
-    public icao: string
-    public name: string = ""
-    public freq: string = ""
-    public lat: string = ""
-    public lon: string = ""
+    public _id = ""
+    public icao = ""
+    public name = ""
+    public lat = 0
+    public lon = 0
+    public freq = ""
 
 
     public constructor(icao: string) {
@@ -46,22 +46,30 @@ export default class Airport {
 
     }
 
-    public static cleanDatabase(): Promise<boolean> {
+    public static async cleanDatabase(): Promise<boolean[]> {
 
-        return new Promise<boolean>((resolve, reject) => {
+        console.log("Cleaning Database Airports")
 
-            AirportsDB.allDocs().then(function (result) {
-                return Promise.all(result.rows.map(function (row) {
-                    return AirportsDB.remove(row.id, row.value.rev);
-                }));
-            }).then(function () {
-                resolve(true)
-            }).catch(function (err) {
-                reject(err)
-            });
+        let promises: Array<Promise<boolean>> = []
 
+        await AirportsDB.allDocs().then((rec) => {
+            rec.rows.forEach((airport) => {
+                let lrPromise = new Promise<boolean>((resolveApt, rejectApt) => {
+                    AirportsDB.get<AirportInterface>(airport.id).then((doc) => {
+                        AirportsDB.remove(doc).then(() => {
+                            resolveApt(true)
+                        }).catch((e) => {
+                            rejectApt(e)
+                        })
+                    }).catch((e) => {
+                        rejectApt(e)
+                    })
+                });
+                promises.push(lrPromise)
+            })
         });
 
+        return Promise.all(promises)
     }
 
 
@@ -98,7 +106,7 @@ export default class Airport {
                 }
 
 
-                AirportsDB.put<AirportInterface>(doc).then(() => {
+                AirportsDB.post<AirportInterface>(doc).then(() => {
                     resolve(true)
                 }).catch((e) => {
                     reject(e)

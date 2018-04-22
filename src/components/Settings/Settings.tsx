@@ -1,11 +1,12 @@
-import * as React from "react";
 import { remote } from "electron";
-import { Button, Form, FormGroup, Label, Input, FormText } from "reactstrap";
+import * as React from "react";
+import { Button, Form, FormGroup, Input, Label } from "reactstrap";
+import Airport from "../../lib/Airport";
+import AirportIndexDirectory from "../../lib/AirportIndex";
+import ConfigStore from "../../lib/ConfigStore";
+import Importer from "../../lib/Importer";
+import CheckPath from "./CheckPath";
 
-import ConfigStore from "../../lib/ConfigStore"
-import Importer from "../../lib/Importer"
-
-import CheckPath from "./CheckPath"
 
 const dialog = remote.dialog;
 
@@ -15,14 +16,15 @@ export interface SettingsPathProps {
 export interface SettingsPathState {
     xplanepath: string
     aiportsImported: string
-    aiportsImportedDisabled: boolean
+    aiportsCleaned: string
+    actionsDisabled: boolean
 }
 
 
 export class Settings extends React.Component<SettingsPathProps, SettingsPathState> {
 
     public constructor(props: any) {
-        super(props);               
+        super(props);
         this.onXlanePathSelect = this.onXlanePathSelect.bind(this);
     }
 
@@ -41,21 +43,36 @@ export class Settings extends React.Component<SettingsPathProps, SettingsPathSta
 
         if (result.length == 1) {
             ConfigStore.setConfig("xplane.path", result[0])
-            this.setState({xplanepath:result[0]})
+            this.setState({ xplanepath: result[0] })
         }
     }
 
     public async onAirportDataImport() {
 
-        this.setState({ aiportsImported: "warning", aiportsImportedDisabled: true })
-        Importer.loadAiprotData().then(() => {
-            this.setState({ aiportsImported: "success" })
-            setTimeout(() => {
-                this.setState({ aiportsImported: "secondary", aiportsImportedDisabled: false })
-            }, 3000)
-        }).catch((e) => {
-            console.log(e)
-        })
+        this.setState({ aiportsImported: "warning", actionsDisabled: true })
+
+        await Importer.loadAiprotData()
+        await AirportIndexDirectory.build()
+
+        this.setState({ aiportsImported: "success" })
+        setTimeout(() => {
+            this.setState({ aiportsImported: "secondary", actionsDisabled: false })
+        }, 3000)
+
+    }
+
+    public async onAirportDataClean() {
+
+        this.setState({ aiportsCleaned: "warning", actionsDisabled: true })
+
+        await Airport.cleanDatabase()
+        await AirportIndexDirectory.build()
+
+        this.setState({ aiportsCleaned: "success" })
+        setTimeout(() => {
+            this.setState({ aiportsCleaned: "secondary", actionsDisabled: false })
+        }, 3000)
+
     }
 
     public render() {
@@ -96,7 +113,10 @@ export class Settings extends React.Component<SettingsPathProps, SettingsPathSta
                 </div>
                 <div className="row">
                     <div className="col-sm">
-                        <Button disabled={this.state.aiportsImportedDisabled} color={this.state.aiportsImported} onClick={() => this.onAirportDataImport()}>Import Airports</Button>
+                        <Button disabled={this.state.actionsDisabled} color={this.state.aiportsImported} onClick={() => this.onAirportDataImport()}>Import Airports</Button>
+                    </div>
+                    <div className="col-sm">
+                        <Button disabled={this.state.actionsDisabled} color={this.state.aiportsCleaned} onClick={() => this.onAirportDataClean()}>Clean Airports</Button>
                     </div>
                 </div>
             </div>

@@ -3,22 +3,52 @@ import { BrowserRouter } from "react-router-dom";
 import "./app.scss";
 import Header from "./components/Header/Header";
 import Main from "./components/Main/Main";
+import AirportIndexDirectory from "./lib/AirportIndex";
 import ConfigStore from "./lib/ConfigStore";
 
 
 //Setting some main Configurations
 ConfigStore.setConfig("xplane.airports", "\\Custom Data\\GNS430\\navdata\\Airports.txt");
 
+export interface AppStates {
+    loaded: boolean
+}
 
-const App = () => (
-    <BrowserRouter basename="/">
-        <div>
-            <Header />
-            <div className="container-fluid main-container">
-                <Main />
+export interface AppProps {
+}
+
+export default class App extends React.Component<AppProps, AppStates> {
+
+    public constructor(props: AppProps) {
+        super(props)
+        this.state = { loaded: false }
+    }
+
+    public componentDidMount() {
+
+        // Initialize the directory
+        AirportIndexDirectory.build().then(() => {
+            this.setState({ loaded: true })
+        })
+    }
+
+    public render() {
+
+        const MainFrame = this.state.loaded ? (
+            <div>
+                <Header />
+                <div className="container-fluid main-container">
+                    <Main />
+                </div>
             </div>
-        </div>
-    </BrowserRouter>
-);
+        ) : (
+                <div>Loading</div>
+            )
 
-export default App;
+        return (
+            <BrowserRouter basename="/">
+                {MainFrame}
+            </BrowserRouter>
+        );
+    }
+}
