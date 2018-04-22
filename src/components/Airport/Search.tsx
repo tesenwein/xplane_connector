@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Form, FormGroup, Input, Label } from "reactstrap";
+import { Row, Col, Form, FormGroup, Input, Label } from "reactstrap";
 import Airport, { AirportInterface } from "../../lib/Airport";
 import "./Search.scss";
 import ShortInfo from "./ShortInfo";
@@ -32,7 +32,7 @@ export default class Search extends React.Component<SearchProps, SearchState> {
     public onSearch(event: React.ChangeEvent<HTMLInputElement>) {
         this.setState({ searchstring: event.target.value })
 
-        if (this.state.searchstring.length > 2) {
+        if (this.state.searchstring.length > 1) {
             if (this.timeOutCheck) clearTimeout(this.timeOutCheck);
             this.timeOutCheck = setTimeout(() => {
                 Airport.find(this.state.searchstring).then((rec) => {
@@ -57,8 +57,8 @@ export default class Search extends React.Component<SearchProps, SearchState> {
 
         return (
             <div>
-                <div className="row">
-                    <div className="col-sm">
+                <Row>
+                    <Col>
                         <Form>
                             <FormGroup>
                                 <Label for="search">Search:</Label>
@@ -71,13 +71,13 @@ export default class Search extends React.Component<SearchProps, SearchState> {
                                 />
                             </FormGroup>
                         </Form>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm">
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
                         {rows}
-                    </div>
-                </div>
+                    </Col>
+                </Row>
             </div>
         );
     }

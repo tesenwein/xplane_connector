@@ -30,7 +30,7 @@ export default class Airport implements AirportInterface {
 
     public static async find(search: string, limit: number = 20): Promise<PouchDB.Find.FindResponse<any>> {
 
-        let searchConfig: PouchDB.Find.FindRequest<AirportInterface> = {
+        const searchConfig: PouchDB.Find.FindRequest<AirportInterface> = {
             selector: {
                 $or: [
                     { name: { $regex: RegExp(search, "i") } },
@@ -50,11 +50,11 @@ export default class Airport implements AirportInterface {
 
         console.log("Cleaning Database Airports")
 
-        let promises: Array<Promise<boolean>> = []
+        const promises: Promise<boolean>[] = []
 
         await AirportsDB.allDocs().then((rec) => {
             rec.rows.forEach((airport) => {
-                let lrPromise = new Promise<boolean>((resolveApt, rejectApt) => {
+                const lrPromise = new Promise<boolean>((resolveApt, rejectApt) => {
                     AirportsDB.get<AirportInterface>(airport.id).then((doc) => {
                         AirportsDB.remove(doc).then(() => {
                             resolveApt(true)
@@ -77,8 +77,6 @@ export default class Airport implements AirportInterface {
 
         return new Promise<boolean>((resolve, reject) => {
 
-            let result: PouchDB.Core.Response;
-
             AirportsDB.get<AirportInterface>(this._id).then((doc) => {
 
                 doc._id = this._id
@@ -96,7 +94,7 @@ export default class Airport implements AirportInterface {
 
             }).catch((e) => {
 
-                let doc: AirportInterface = {
+                const doc: AirportInterface = {
                     _id: this._id,
                     icao: this.icao,
                     name: this.name,
