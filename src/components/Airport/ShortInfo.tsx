@@ -30,7 +30,7 @@ export default class ShortInfo extends React.Component<ShortInfoProps, ShortInfo
                 </div>
                 <div className="col-sm-1">
                     <Link to={{
-                        pathname: "/airport/"+this.props.airport.icao
+                        pathname: "/airport/" + this.props.airport.icao
                     }}>Details</Link>
                 </div>
             </div>

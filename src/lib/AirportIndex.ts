@@ -9,7 +9,7 @@ export interface AirportIndexApt {
 
 class AirportIndex {
 
-    public data: Array<AirportIndexApt> = []
+    public data: AirportIndexApt[] = []
 
     public constructor() {
 
@@ -17,7 +17,7 @@ class AirportIndex {
 
     public async build(): Promise<boolean[]> {
 
-        let promises: Array<Promise<boolean>> = []
+        const promises: Promise<boolean>[] = []
 
         console.log("Building AirportIndex")
 
@@ -25,13 +25,13 @@ class AirportIndex {
 
         await AirportsDB.allDocs().then((rec) => {
             rec.rows.forEach((airport) => {
-                let lrPromise = new Promise<boolean>((resolveApt, rejectApt) => {
+                const lrPromise = new Promise<boolean>((resolveApt, rejectApt) => {
                     AirportsDB.get<AirportInterface>(airport.id).then((doc) => {
-                        let apt: AirportIndexApt = {
+                        const apt: AirportIndexApt = {
                             icao: doc.icao,
                             lon: doc.lon,
                             lat: doc.lat
-                        }                    
+                        }
                         this.data.push(apt)
                         resolveApt(true)
                     }).catch((e) => {
@@ -39,10 +39,10 @@ class AirportIndex {
                     })
                 });
                 promises.push(lrPromise)
-            })               
+            })
         });
 
-        Promise.all(promises).then(()=>{
+        Promise.all(promises).then(() => {
             console.log("AirportIndex loaded with", this.data.length, "Records")
         })
         return Promise.all(promises)

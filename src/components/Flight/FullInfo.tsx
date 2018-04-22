@@ -2,6 +2,7 @@ import * as React from 'react';
 import { XplaneFlightPos, XplaneEmmiter } from "../../lib/XplaneConnector";
 import { Map, Marker, Popup, TileLayer, CircleMarker } from 'react-leaflet'
 import { LatLng, LatLngLiteral, LeafletEvent } from 'leaflet';
+import { Row, Col, Alert } from "reactstrap"
 
 import "./FullInfo.scss"
 
@@ -11,6 +12,7 @@ export interface FullInfoUrlParams {
 export interface FullInfoStates {
     flightPos: XplaneFlightPos
     zoom: number
+    connected: boolean
 }
 
 export interface FullInfoProps {
@@ -27,7 +29,8 @@ export default class FullInfo extends React.Component<FullInfoProps, FullInfoSta
                 lat: 0,
                 lon: 0
             },
-            zoom: 13
+            zoom: 13,
+            connected: false
         }
 
 
@@ -41,21 +44,22 @@ export default class FullInfo extends React.Component<FullInfoProps, FullInfoSta
     public componentWillMount() {
 
         XplaneEmmiter.on("change", (geoCurrentData: XplaneFlightPos) => {
-            this.setState({ flightPos: geoCurrentData })
+            this.setState({ flightPos: geoCurrentData, connected: true })
         })
     }
 
     public render() {
         const position = new LatLng(this.state.flightPos.lat, this.state.flightPos.lon)
-        return (
+
+        const CheckConnection = this.state.connected ? (
             <div>
-                <div className="row">
+                <Row>
                     <div className="col-sm">
                         FullInfo: {this.state.flightPos.lon} / {this.state.flightPos.lat}
                     </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm">
+                </Row>
+                <Row>
+                    <Col>
                         <Map onzoomend={this.onZoom} className="mapWindow" center={position} zoom={this.state.zoom} >
                             <TileLayer
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -63,8 +67,20 @@ export default class FullInfo extends React.Component<FullInfoProps, FullInfoSta
                             />
                             <CircleMarker center={position} color="red" radius={10} />
                         </Map>
-                    </div>
-                </div>
+                    </Col>
+                </Row>
+            </div>
+        ) : (
+                <Row>
+                    <Col>
+                        <Alert color="dark">Not Connected to XPlane</Alert>
+                    </Col>
+                </Row>
+            )
+
+        return (
+            <div>
+                {CheckConnection}
             </div>
         );
     }

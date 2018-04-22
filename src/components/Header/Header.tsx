@@ -35,25 +35,25 @@ export class Header extends React.Component<any, any> {
     public render() {
         return (
             <div>
-                <Navbar color="light" light expand="md">
+                <Navbar color="light" light={true} expand="md">
                     <NavbarBrand href="/">X-Plane Connector</NavbarBrand>
                     <NavbarToggler onClick={this.toggle} />
-                    <Collapse isOpen={this.state.isOpen} navbar>
-                        <Nav className="ml-auto" navbar>
+                    <Collapse isOpen={this.state.isOpen} navbar={true}>
+                        <Nav className="ml-auto" navbar={true}>
                             <NavItem>
                                 <NavLink className="nav-link" to="/">Home</NavLink>
                             </NavItem>
                             <NavItem>
                                 <NavLink className="nav-link" to="/settings">Settings</NavLink>
                             </NavItem>
-                            <UncontrolledDropdown nav inNavbar>
-                                <DropdownToggle nav caret>
+                            <UncontrolledDropdown nav={true} inNavbar={true}>
+                                <DropdownToggle nav={true} caret={true}>
                                     Options
                                 </DropdownToggle>
-                                <DropdownMenu right>
+                                <DropdownMenu right={true}>
                                     <DropdownItem>Option 1</DropdownItem>
                                     <DropdownItem>Option 2</DropdownItem>
-                                    <DropdownItem divider />
+                                    <DropdownItem divider={true} />
                                     <DropdownItem>Reset</DropdownItem>
                                 </DropdownMenu>
                             </UncontrolledDropdown>

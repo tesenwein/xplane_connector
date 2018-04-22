@@ -18,7 +18,7 @@ export default class AptDataReader {
 
     public async createAirportIndex(): Promise<AirportIndex> {
 
-        let lr = new LineByLineReader(ConfigStore.getConfig("xplane.path") + "/Resources/default scenery/default apt dat/Earth nav data/apt.dat", { skipEmptyLines: true })
+        const lr = new LineByLineReader(ConfigStore.getConfig("xplane.path") + "/Resources/default scenery/default apt dat/Earth nav data/apt.dat", { skipEmptyLines: true })
         let counter = 0
 
         return new Promise<AptDataReaderInterface>((resolve, reject) => {
@@ -26,14 +26,14 @@ export default class AptDataReader {
             console.log("Creating Airport Index")
 
             lr.on("line", (line: string) => {
-                line = line.replace(/ +(?= )/g, '');
+                const lineNew = line.replace(/ +(?= )/g, '');
 
                 if (line.startsWith("1 ")) {
-                    let parseLine = line.split(" ")
+                    const parseLine = lineNew.split(" ")
                     this.index[parseLine[4]] = counter
                 }
 
-                counter++
+                counter = counter + 1
             });
 
             lr.on("end", () => {
@@ -52,17 +52,14 @@ export default class AptDataReader {
 
     public getAirportData(icao: string): Promise<AptDataReaderInterface> {
 
+        const startAt = this.index[icao] | 0
 
-        //await Airport.cleanDatabase()
-
-        let startAt = this.index[icao] | 0
-
-        let lastAirport = null;
-        let lr = new LineByLineReader(ConfigStore.getConfig("xplane.path") + "/Resources/default scenery/default apt dat/Earth nav data/apt.dat", { skipEmptyLines: true, start: startAt })
-        let airportData: AptDataReaderInterface = {}
+        const lastAirport = null;
+        const lr = new LineByLineReader(ConfigStore.getConfig("xplane.path") + "/Resources/default scenery/default apt dat/Earth nav data/apt.dat", { skipEmptyLines: true, start: startAt })
+        const airportData: AptDataReaderInterface = {}
         let airportFound = false;
 
-        let lrPromise = new Promise<AptDataReaderInterface>((resolve, reject) => {
+        const lrPromise = new Promise<AptDataReaderInterface>((resolve, reject) => {
 
             lr.on("line", (line: string) => {
 
@@ -100,25 +97,23 @@ export default class AptDataReader {
 
     private static readTransition(line: string): number | undefined {
         if (line.startsWith("1302 transition_alt")) {
-            let res = line.replace("1302 transition_alt ", "");
+            const res = line.replace("1302 transition_alt ", "");
             if (res.length > 0) {
                 return parseInt(res)
             }
-            else {
-                return undefined
-            }
+
+            return undefined
         }
     }
 
     private static readCity(line: string): string | undefined {
         if (line.startsWith("1302 city ")) {
-            let res = line.replace("1302 city ", "");
+            const res = line.replace("1302 city ", "");
             if (res.length > 0) {
                 return res
             }
-            else {
-                return undefined
-            }
+
+            return undefined
         }
     }
 }

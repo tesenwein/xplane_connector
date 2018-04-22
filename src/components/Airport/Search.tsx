@@ -11,7 +11,7 @@ export interface SearchProps {
 
 export interface SearchState {
     searchstring: string
-    airports: Array<AirportInterface>
+    airports: AirportInterface[]
 }
 
 
@@ -47,12 +47,12 @@ export default class Search extends React.Component<SearchProps, SearchState> {
 
     public render() {
 
-        let rows: JSX.Element[] = []
+        const rows: JSX.Element[] = []
         let counter = 0;
 
         this.state.airports.map((airportItem) => {
             rows.push(<ShortInfo key={airportItem.toString()+counter} airport={airportItem} />);
-            counter++
+            counter = counter + 1 
         });
 
         return (

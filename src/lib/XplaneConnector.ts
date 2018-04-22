@@ -13,7 +13,7 @@ export default class XplaneConnector extends EventEmitter {
 
         super()
 
-        let xplane = new XPlane({
+        const xplane = new XPlane({
             port: {
                 in: 49000
             }

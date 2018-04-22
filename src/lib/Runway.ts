@@ -10,8 +10,8 @@ export default class Runway {
     public heading:number = 0
     public length:number = 0
 
-    //public hdg: number
-    //public length: number
+    // public hdg: number
+    // public length: number
 
     public constructor(icao: string, runwayId:string) {
 
@@ -26,7 +26,7 @@ export default class Runway {
 
     public save(){
 
-        let json = {
+        const json = {
             id: this.id,
             icao: this.icao,
             runwayId: this.runwayId,

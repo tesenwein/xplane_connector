@@ -11,25 +11,25 @@ export default class Importer {
 
         console.log("Importing Database Airports")
 
-        let AirportDat = new AptDatReader();
-        //await AirportDat.createAirportIndex()
+        const AirportDat = new AptDatReader();
+        // await AirportDat.createAirportIndex()
 
         let lastAirport = null;
-        let lr = new LineByLineReader(ConfigStore.getConfig("xplane.path") + ConfigStore.getConfig("xplane.airports"))
-        let promises: Array<Promise<boolean>> = []
+        const lr = new LineByLineReader(ConfigStore.getConfig("xplane.path") + ConfigStore.getConfig("xplane.airports"))
+        const promises: Promise<boolean>[] = []
 
-        let lrPromise = new Promise<boolean>((resolve, reject) => {
+        const lrPromise = new Promise<boolean>((resolve, reject) => {
 
             lr.on("line", (line: string) => {
 
                 if (line.startsWith("A,")) {
-                    let aiportData = line.split(",")
-                    let apt = new Airport(aiportData[1])
+                    const aiportData = line.split(",")
+                    const apt = new Airport(aiportData[1])
                     apt.name = aiportData[2]
                     apt.lat = parseFloat(aiportData[3])
                     apt.lon = parseFloat(aiportData[4])
 
-                    let aptPromise = apt.save()
+                    const aptPromise = apt.save()
                     lr.pause()
 
                     promises.push(aptPromise)
@@ -38,10 +38,10 @@ export default class Importer {
                         console.log("Imported Airport", apt.icao, apt.lat, apt.lon)
                     })
 
-                    //get Dat information
+                    // get Dat information
                     // AirportDat.getAirportData(apt.icao).then((data)=>{                        
-                    //promises.push(apt.save())
-                    //})
+                    // promises.push(apt.save())
+                    // })
 
                     lastAirport = apt.icao
 

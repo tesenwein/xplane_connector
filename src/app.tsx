@@ -1,13 +1,13 @@
 import * as React from "react";
 import { BrowserRouter } from "react-router-dom";
+import { Container } from "reactstrap";
 import "./app.scss";
 import Header from "./components/Header/Header";
 import Main from "./components/Main/Main";
-import AirportIndexDirectory from "./lib/AirportIndex";
+import AirportIndex from "./lib/AirportIndex";
 import ConfigStore from "./lib/ConfigStore";
 
 
-//Setting some main Configurations
 ConfigStore.setConfig("xplane.airports", "\\Custom Data\\GNS430\\navdata\\Airports.txt");
 
 export interface AppStates {
@@ -27,7 +27,7 @@ export default class App extends React.Component<AppProps, AppStates> {
     public componentDidMount() {
 
         // Initialize the directory
-        AirportIndexDirectory.build().then(() => {
+        AirportIndex.build().then(() => {
             this.setState({ loaded: true })
         })
     }
@@ -37,9 +37,9 @@ export default class App extends React.Component<AppProps, AppStates> {
         const MainFrame = this.state.loaded ? (
             <div>
                 <Header />
-                <div className="container-fluid main-container">
+                <Container fluid={true}>
                     <Main />
-                </div>
+                </Container>
             </div>
         ) : (
                 <div>Loading</div>
