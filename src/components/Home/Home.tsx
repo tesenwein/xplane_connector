@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import Search from "../Airport/Search"
+import FullInfo from "../Flight/FullInfo"
 
 export interface HomeProps {
 }
@@ -19,6 +20,7 @@ export default class Home extends React.Component<HomeProps, HomeState> {
         return (
             <div className="row">
                 <div className="col-sm">
+                    <FullInfo />
                     <Search />
                 </div>
             </div>
