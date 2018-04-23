@@ -5,6 +5,7 @@ export interface AirportIndexApt {
     icao: string
     lat: number
     lon: number
+    distance: number | null
 }
 
 class AirportIndex {
@@ -30,7 +31,8 @@ class AirportIndex {
                         const apt: AirportIndexApt = {
                             icao: doc.icao,
                             lon: doc.lon,
-                            lat: doc.lat
+                            lat: doc.lat,
+                            distance: null
                         }
                         this.data.push(apt)
                         resolveApt(true)
