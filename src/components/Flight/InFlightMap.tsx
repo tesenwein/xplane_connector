@@ -1,36 +1,30 @@
+import { LatLng, LeafletEvent } from 'leaflet';
 import * as React from 'react';
-import { XplaneFlightPos, XplaneEmmiter } from "../../lib/XplaneConnector";
-import { Map, Marker, Popup, TileLayer, CircleMarker } from 'react-leaflet'
-import { LatLng, LatLngLiteral, LeafletEvent } from 'leaflet';
-import { Row, Col, Alert } from "reactstrap"
+import { CircleMarker, Map, TileLayer } from 'react-leaflet';
+import { Alert, Col, Row } from "reactstrap";
+import { XplaneEmmiter, XplaneFlightData } from "../../lib/XplaneConnector";
+import "./InFlightMap.scss";
 
-import "./FullInfo.scss"
 
-export interface FullInfoUrlParams {
-}
-
-export interface FullInfoStates {
-    flightPos: XplaneFlightPos
+export interface InFlightMapStates {
+    flightPos: XplaneFlightData
     zoom: number
     connected: boolean
 }
 
-export interface FullInfoProps {
+export interface InFlightMapProps {
 
 }
 
-export default class FullInfo extends React.Component<FullInfoProps, FullInfoStates> {
+export default class InFlightMap extends React.Component<InFlightMapProps, InFlightMapStates> {
 
-    public constructor(props: FullInfoProps) {
+    public constructor(props: InFlightMapProps) {
         super(props)
 
         this.state = {
-            flightPos: {
-                lat: 0,
-                lon: 0
-            },
+            flightPos: XplaneEmmiter.xplaneData,
             zoom: 13,
-            connected: false
+            connected: XplaneEmmiter.connected
         }
 
 
@@ -41,11 +35,13 @@ export default class FullInfo extends React.Component<FullInfoProps, FullInfoSta
         this.setState({ zoom: e.target._zoom });
     }
 
-    public componentWillMount() {
+    public componentWillMount(){
+        console.log("unmountig")
+        XplaneEmmiter.removeListener("change", this.updateFlightData)
+    }
 
-        XplaneEmmiter.on("change", (geoCurrentData: XplaneFlightPos) => {
-            this.setState({ flightPos: geoCurrentData, connected: true })
-        })
+    private updateFlightData(currentData: XplaneFlightData) {
+        this.setState({ flightPos: currentData, connected: true });
     }
 
     public render() {
@@ -55,7 +51,7 @@ export default class FullInfo extends React.Component<FullInfoProps, FullInfoSta
             <div>
                 <Row>
                     <div className="col-sm">
-                        FullInfo: {this.state.flightPos.lon} / {this.state.flightPos.lat}
+                        InFlightMap: {this.state.flightPos.lon} / {this.state.flightPos.lat}
                     </div>
                 </Row>
                 <Row>
@@ -71,11 +67,7 @@ export default class FullInfo extends React.Component<FullInfoProps, FullInfoSta
                 </Row>
             </div>
         ) : (
-                <Row>
-                    <Col>
-                        <Alert color="dark">Not Connected to XPlane</Alert>
-                    </Col>
-                </Row>
+                <div />
             )
 
         return (

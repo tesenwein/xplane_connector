@@ -13,7 +13,6 @@ interface XplaneOptionsPort {
     out?: number
 }
 
-
 declare class XPlane {
     constructor(options: XplaneOptions);
 

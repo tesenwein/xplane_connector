@@ -44,15 +44,16 @@ export class Header extends React.Component<any, any> {
                                 <NavLink className="nav-link" to="/">Home</NavLink>
                             </NavItem>
                             <NavItem>
-                                <NavLink className="nav-link" to="/settings">Settings</NavLink>
+                                <NavLink className="nav-link" to="/inflight">Flight Information</NavLink>
                             </NavItem>
                             <UncontrolledDropdown nav={true} inNavbar={true}>
                                 <DropdownToggle nav={true} caret={true}>
                                     Options
                                 </DropdownToggle>
                                 <DropdownMenu right={true}>
-                                    <DropdownItem>Option 1</DropdownItem>
-                                    <DropdownItem>Option 2</DropdownItem>
+                                    <DropdownItem>
+                                        <NavLink className="nav-link" to="/settings">Settings</NavLink>
+                                    </DropdownItem>
                                     <DropdownItem divider={true} />
                                     <DropdownItem>Reset</DropdownItem>
                                 </DropdownMenu>

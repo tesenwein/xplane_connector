@@ -1,0 +1,38 @@
+import * as React from 'react';
+import InFlightMap from "../Flight/InFlightMap";
+import CheckConnection from "../Settings/CheckConnection";
+import "./InFlightInformation.scss";
+
+
+export interface InFlightInformationUrlParams {
+}
+
+export interface InFlightInformationStates {
+
+}
+
+export interface InFlightInformationProps {
+
+}
+
+export default class InFlightInformation extends React.Component<InFlightInformationProps, InFlightInformationStates> {
+
+    public constructor(props: InFlightInformationProps) {
+        super(props)
+    }
+
+
+    public componentWillMount() {
+
+
+    }
+
+    public render() {
+        return (
+            <div>
+                <CheckConnection />
+                <InFlightMap />
+            </div>
+        );
+    }
+}

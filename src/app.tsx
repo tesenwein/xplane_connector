@@ -3,9 +3,10 @@ import { BrowserRouter } from "react-router-dom";
 import { Container } from "reactstrap";
 import "./app.scss";
 import Header from "./components/Header/Header";
-import Main from "./components/Main/Main";
+import Main from "./components/Pages/Main";
 import AirportIndex from "./lib/AirportIndex";
 import ConfigStore from "./lib/ConfigStore";
+import { XplaneEmmiter } from "./lib/XplaneConnector";
 
 
 ConfigStore.setConfig("xplane.airports", "\\Custom Data\\GNS430\\navdata\\Airports.txt");

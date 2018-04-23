@@ -1,8 +1,7 @@
 import * as React from "react";
+import { Col, Row } from "reactstrap";
+import Search from "../Airport/Search";
 
-import Search from "../Airport/Search"
-import FullInfo from "../Flight/FullInfo"
-import ClosestAirports from "../Flight/ClosestAirports"
 
 export interface HomeProps {
 }
@@ -19,13 +18,11 @@ export default class Home extends React.Component<HomeProps, HomeState> {
     public render() {
 
         return (
-            <div className="row">
-                <div className="col-sm">
-                    <FullInfo />
-                    <ClosestAirports />
+            <Row>
+                <Col>
                     <Search />
-                </div>
-            </div>
+                </Col>
+            </Row>
         );
     }
 }

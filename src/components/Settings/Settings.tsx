@@ -2,7 +2,7 @@ import { remote } from "electron";
 import * as React from "react";
 import { Button, Form, FormGroup, Input, Label } from "reactstrap";
 import Airport from "../../lib/Airport";
-import AirportIndexDirectory from "../../lib/AirportIndex";
+import AirportIndex from "../../lib/AirportIndex";
 import ConfigStore from "../../lib/ConfigStore";
 import Importer from "../../lib/Importer";
 import CheckPath from "./CheckPath";
@@ -26,6 +26,8 @@ export class Settings extends React.Component<SettingsPathProps, SettingsPathSta
     public constructor(props: any) {
         super(props);
         this.onXlanePathSelect = this.onXlanePathSelect.bind(this);
+        this.onAirportDataImport = this.onAirportDataImport.bind(this);
+        this.onAirportDataClean = this.onAirportDataClean.bind(this);
     }
 
     public componentWillMount() {
@@ -41,7 +43,7 @@ export class Settings extends React.Component<SettingsPathProps, SettingsPathSta
     public async onXlanePathSelect() {
         const result = await dialog.showOpenDialog({ properties: ["openDirectory"] });
 
-        if (result.length == 1) {
+        if (result.length === 1) {
             ConfigStore.setConfig("xplane.path", result[0])
             this.setState({ xplanepath: result[0] })
         }
@@ -52,7 +54,7 @@ export class Settings extends React.Component<SettingsPathProps, SettingsPathSta
         this.setState({ aiportsImported: "warning", actionsDisabled: true })
 
         await Importer.loadAiprotData()
-        await AirportIndexDirectory.build()
+        await AirportIndex.build()
 
         this.setState({ aiportsImported: "success" })
         setTimeout(() => {
@@ -66,7 +68,7 @@ export class Settings extends React.Component<SettingsPathProps, SettingsPathSta
         this.setState({ aiportsCleaned: "warning", actionsDisabled: true })
 
         await Airport.cleanDatabase()
-        await AirportIndexDirectory.build()
+        await AirportIndex.build()
 
         this.setState({ aiportsCleaned: "success" })
         setTimeout(() => {
@@ -93,7 +95,6 @@ export class Settings extends React.Component<SettingsPathProps, SettingsPathSta
                                     type="text"
                                     name="xplanepath"
                                     id="xplanepath"
-                                    onChange={() => { }}
                                     value={this.state.xplanepath}
                                 />
                             </FormGroup>
@@ -113,10 +114,10 @@ export class Settings extends React.Component<SettingsPathProps, SettingsPathSta
                 </div>
                 <div className="row">
                     <div className="col-sm">
-                        <Button disabled={this.state.actionsDisabled} color={this.state.aiportsImported} onClick={() => this.onAirportDataImport()}>Import Airports</Button>
+                        <Button disabled={this.state.actionsDisabled} color={this.state.aiportsImported} onClick={this.onAirportDataImport}>Import Airports</Button>
                     </div>
                     <div className="col-sm">
-                        <Button disabled={this.state.actionsDisabled} color={this.state.aiportsCleaned} onClick={() => this.onAirportDataClean()}>Clean Airports</Button>
+                        <Button disabled={this.state.actionsDisabled} color={this.state.aiportsCleaned} onClick={this.onAirportDataClean}>Clean Airports</Button>
                     </div>
                 </div>
             </div>

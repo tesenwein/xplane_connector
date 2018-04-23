@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import { XplaneEmmiter } from './lib/XplaneConnector';
 
 let win: BrowserWindow | null;
 
