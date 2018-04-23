@@ -1,5 +1,6 @@
 import * as ExtPlaneJs from "extplanejs"
 import { EventEmitter } from "events";
+import { setTimeout, setInterval } from "timers";
 
 
 export interface XplaneFlightData {
@@ -18,6 +19,10 @@ export default class XplaneConnector extends EventEmitter {
         speed: 0
     }
 
+    private lastUpdate = new Date()
+
+    private controlTimer: NodeJS.Timer = setInterval(() => { this.alive() }, 1000)
+
     public connected: boolean = false;
 
     public connect() {
@@ -30,13 +35,7 @@ export default class XplaneConnector extends EventEmitter {
             broadcast: true
         })
 
-        this.extPlaneJs.on("error", (err) => {
-            console.error('whoops! there was an error', err);
-        });
-
         this.extPlaneJs.on("loaded", () => {
-
-            this.connected = true;
 
             console.log("Connecter Loaded")
 
@@ -48,7 +47,7 @@ export default class XplaneConnector extends EventEmitter {
                 this.extPlaneJs.client.subscribe("sim/flightmodel/position/latitude")
                 this.extPlaneJs.client.subscribe("sim/flightmodel/position/longitude")
 
-                this.extPlaneJs.on("data-ref",(dataRef,value) =>{
+                this.extPlaneJs.on("data-ref", (dataRef, value) => {
 
                     switch (dataRef) {
                         case "sim/cockpit2/gauges/indicators/airspeed_kts_pilot":
@@ -56,21 +55,19 @@ export default class XplaneConnector extends EventEmitter {
                             break;
                         case "sim/flightmodel/position/longitude":
                             this.xplaneData.lon = value
-                            break;                    
+                            break;
                         case "sim/flightmodel/position/latitude":
                             this.xplaneData.lat = value
                             break;
-                    
+
                         default:
                             break;
                     }
 
+                    this.lastUpdate = new Date()
 
                     this.emit("change", this.xplaneData)
                 })
-
-       
-                this.emit("connected")
             }
         })
     }
@@ -84,6 +81,26 @@ export default class XplaneConnector extends EventEmitter {
         this.connected = false
 
         this.emit("disconnected")
+    }
+
+    public alive() {
+
+        const now = new Date()
+
+        //console.log((now.getTime() - now.getTime()))
+
+        if ((now.getTime() - this.lastUpdate.getTime()) >= 1000) {
+            this.connected = false
+            this.emit("disconnected")
+        }
+        else {
+            this.connected = true
+            this.emit("connected")
+        }
+
+        console.log("Connection to XPlane status:", this.connected)
+
+        this.emit("connectionchange")
     }
 }
 

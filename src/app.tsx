@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BrowserRouter } from "react-router-dom";
-import { Container } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
 import "./app.scss";
 import Header from "./components/Header/Header";
 import Main from "./components/Pages/Main";
@@ -27,6 +27,8 @@ export default class App extends React.Component<AppProps, AppStates> {
 
     public componentDidMount() {
 
+        XplaneEmmiter.connect()
+
         // Initialize the directory
         AirportIndex.build().then(() => {
             this.setState({ loaded: true })
@@ -38,8 +40,12 @@ export default class App extends React.Component<AppProps, AppStates> {
         const MainFrame = this.state.loaded ? (
             <div>
                 <Header />
-                <Container fluid={true}>
-                    <Main />
+                <Container fluid={true} id="main-container">
+                    <Row>
+                        <Col>
+                            <Main />
+                        </Col>
+                    </Row>
                 </Container>
             </div>
         ) : (

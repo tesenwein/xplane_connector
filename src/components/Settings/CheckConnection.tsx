@@ -13,6 +13,8 @@ export interface checkPathState {
 
 export default class CheckPath extends React.Component<checkPathProps, checkPathState> {
 
+    private compontentMounted = false;
+
     public constructor(props: checkPathProps) {
         super(props);
 
@@ -20,26 +22,27 @@ export default class CheckPath extends React.Component<checkPathProps, checkPath
             xplaneConnected: XplaneEmmiter.connected
         }
 
-        this.onReconnect = this.onReconnect.bind(this);
     }
 
     public componentWillMount() {
-        XplaneEmmiter.on("connected", () => {
-            this.setState({ xplaneConnected: true })
-        })
-        XplaneEmmiter.on("disconnected", () => {
-            this.setState({ xplaneConnected: false })
+
+        this.compontentMounted = true
+
+        XplaneEmmiter.on("connectionchange", () => {
+            if (this.compontentMounted) {
+                this.setState({ xplaneConnected: XplaneEmmiter.connected })
+            }
         })
     }
 
-    public onReconnect() {
-        XplaneEmmiter.connect()
+    public componentWillUnmount() {
+        this.compontentMounted = false
     }
 
     public render() {
         const XplaneConnectCheck = this.state.xplaneConnected ?
             (<div />) :
-            (<Alert color="danger" onClick={this.onReconnect}>No XPlane connection found (Click to reconnect)</Alert>)
+            (<Alert color="info">No X-Plane connection found. Reconnecting...</Alert>)
 
         return (
             <div>

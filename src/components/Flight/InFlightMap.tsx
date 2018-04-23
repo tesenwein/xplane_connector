@@ -18,12 +18,17 @@ export interface InFlightMapProps {
 
 export default class InFlightMap extends React.Component<InFlightMapProps, InFlightMapStates> {
 
+    public componentMounted: boolean = false;
+
     public constructor(props: InFlightMapProps) {
+
         super(props)
+
+        const zoom = parseInt(localStorage.getItem("lastZoomInFlightMap") || '13')
 
         this.state = {
             flightPos: XplaneEmmiter.xplaneData,
-            zoom: 13,
+            zoom: zoom,
             connected: XplaneEmmiter.connected
         }
 
@@ -32,17 +37,24 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
     }
 
     public onZoom(e: LeafletEvent) {
+        localStorage.setItem("lastZoomInFlightMap", e.target._zoom)
         this.setState({ zoom: e.target._zoom });
     }
 
-    public componentWillMount(){
-        console.log("unmountig")
-        XplaneEmmiter.removeListener("change", this.updateFlightData)
+    public componentWillMount() {
+        this.componentMounted = true
+
+        XplaneEmmiter.on("change", (currentData: XplaneFlightData) => {
+            if (this.componentMounted) {
+                this.setState({ flightPos: currentData, connected: true });
+            }
+        })
     }
 
-    private updateFlightData(currentData: XplaneFlightData) {
-        this.setState({ flightPos: currentData, connected: true });
+    public componentWillUnmount() {
+        this.componentMounted = false
     }
+
 
     public render() {
         const position = new LatLng(this.state.flightPos.lat, this.state.flightPos.lon)

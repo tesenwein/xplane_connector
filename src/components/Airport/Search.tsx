@@ -24,25 +24,33 @@ export default class Search extends React.Component<SearchProps, SearchState> {
         this.onSearch = this.onSearch.bind(this);
 
         this.state = {
-            searchstring: "",
+            searchstring: localStorage.getItem("lastSearchIcao") || "",
             airports: []
+        }
+
+        if(this.state.searchstring.length > 2){
+            this.searchAirports()
         }
     }
 
     public onSearch(event: React.ChangeEvent<HTMLInputElement>) {
+        localStorage.setItem("lastSearchIcao", event.target.value)
         this.setState({ searchstring: event.target.value })
 
-        if (this.state.searchstring.length > 1) {
+        if (this.state.searchstring.length > 2) {
             if (this.timeOutCheck) clearTimeout(this.timeOutCheck);
             this.timeOutCheck = setTimeout(() => {
-                Airport.find(this.state.searchstring).then((rec) => {
-                    console.log(rec.docs.length)
-                    this.setState({ airports: rec.docs })
-                }).catch((e) => {
-                    console.log(e)
-                });
+                this.searchAirports();
             }, 200)
         }
+    }
+
+    private searchAirports() {
+        Airport.find(this.state.searchstring).then((rec) => {
+            this.setState({ airports: rec.docs });
+        }).catch((e) => {
+            console.log(e);
+        });
     }
 
     public render() {
