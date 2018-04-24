@@ -9,9 +9,11 @@ export default class XplaneConnector extends EventEmitter {
 
     private lastUpdate = new Date()
 
-    private controlTimer: NodeJS.Timer = setInterval(() => { this.alive() }, 1000)
+    private controlTimer: NodeJS.Timer = setInterval(() => { this.alive() }, 500)
 
-    public connected: boolean = false;
+    public connected: boolean = false
+
+    public paused: boolean = false
 
     public connect() {
 
@@ -35,6 +37,8 @@ export default class XplaneConnector extends EventEmitter {
                 this.extPlaneJs.client.subscribe("sim/flightmodel/position/latitude")
                 this.extPlaneJs.client.subscribe("sim/flightmodel/position/longitude")
 
+                this.extPlaneJs.client.subscribe("sim/time/sim_speed")
+
                 this.extPlaneJs.on("data-ref", (dataRef, value) => {
 
                     const currentData = FlightData.getData()
@@ -48,6 +52,14 @@ export default class XplaneConnector extends EventEmitter {
                             break;
                         case "sim/flightmodel/position/latitude":
                             currentData.lat = parseFloat(value)
+                            break;
+                        case "sim/time/sim_speed":
+                            if(parseInt(value) < 1){
+                                this.paused = true
+                            }
+                            else{
+                                this.paused = false
+                            }
                             break;
                         default:
                             break;
@@ -76,7 +88,7 @@ export default class XplaneConnector extends EventEmitter {
 
         const now = new Date()
 
-        if ((now.getTime() - this.lastUpdate.getTime()) >= 1000) {
+        if (((now.getTime() - this.lastUpdate.getTime()) >= 1000) && !this.paused) {
             this.connected = false
             this.emit("disconnected")
         }
