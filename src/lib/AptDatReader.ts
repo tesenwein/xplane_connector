@@ -1,6 +1,7 @@
 import * as debug from "debug";
 import * as LineByLineReader from 'line-by-line';
 import ConfigStore from "../lib/ConfigStore";
+import Debug from "../lib/Debug"
 
 export interface AptDataReaderInterface {
     icao?: string
@@ -24,7 +25,7 @@ export default class AptDataReader {
 
         return new Promise<AptDataReaderInterface>((resolve, reject) => {
 
-            debug("Creating Airport Index")
+            Debug.log("Creating Airport Index")
 
             lr.on("line", (line: string) => {
                 const lineNew = line.replace(/ +(?= )/g, '');
@@ -38,7 +39,7 @@ export default class AptDataReader {
             });
 
             lr.on("end", () => {
-                debug("Complete Airport Index")
+                Debug.log("Complete Airport Index")
                 resolve(this.index)
             })
 
@@ -70,7 +71,7 @@ export default class AptDataReader {
                         airportFound = true
                     }
                     if (airportFound) {
-                        debug("ending Search " + icao)
+                        Debug.log("ending Search " + icao)
                         lr.end();
 
                     }

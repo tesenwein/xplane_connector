@@ -1,10 +1,10 @@
-import * as debug from "debug";
 import * as React from "react";
 import { Col, Form, FormGroup, Input, Label, Row } from "reactstrap";
 import Airport, { AirportInterface } from "../../lib/Airport";
+import Debug from "../../lib/Debug";
 import "./Search.scss";
 import ShortInfo from "./ShortInfo";
-;
+
 
 
 
@@ -51,7 +51,7 @@ export default class Search extends React.Component<SearchProps, SearchState> {
         Airport.find(this.state.searchstring).then((rec) => {
             this.setState({ airports: rec.docs });
         }).catch((e) => {
-            debug(e);
+            Debug.warn(e);
         });
     }
 

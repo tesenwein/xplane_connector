@@ -1,4 +1,4 @@
-import * as debug from "debug";
+import Debug from "../lib/Debug"
 import * as LineByLineReader from 'line-by-line';
 import AptDatReader from "../lib/AptDatReader";
 import ConfigStore from "../lib/ConfigStore";
@@ -9,7 +9,7 @@ export default class Importer {
 
     public static async loadAiprotData(): Promise<boolean[]> {
 
-        debug("Importing Database Airports")
+        Debug.log("Importing Database Airports")
 
         const AirportDat = new AptDatReader();
         // await AirportDat.createAirportIndex()
@@ -35,7 +35,7 @@ export default class Importer {
                     promises.push(aptPromise)
                     aptPromise.then(() => {
                         lr.resume()
-                        debug("Imported Airport " + apt.icao + apt.lat + apt.lon)
+                        Debug.log("Imported Airport " + apt.icao + apt.lat + apt.lon)
                     })
 
                     // get Dat information
