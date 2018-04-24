@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { RouteComponentProps } from "react-router";
+import * as debug from "debug"
 
 
 export interface DetailsUrlParams{
@@ -18,7 +19,7 @@ export default class Details extends React.Component<DetailsProps, DetailsStates
     public constructor(props:DetailsProps){
         super(props)
 
-        console.log(this.props.match.params.icao)
+        debug(this.props.match.params.icao)
     }
 
     public render() {

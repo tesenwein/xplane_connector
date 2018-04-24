@@ -1,9 +1,9 @@
-import { app, BrowserWindow } from 'electron';
-import * as path from 'path';
-import * as url from 'url';
-import { XplaneEmmiter } from './lib/XplaneConnector';
+import * as debug from "debug"
+import { BrowserWindow, app } from 'electron'
+import * as path from 'path'
+import * as url from 'url'
 
-let win: BrowserWindow | null;
+let win: BrowserWindow | null
 
 const installExtensions = async () => {
     const installer = require('electron-devtools-installer');
@@ -12,7 +12,7 @@ const installExtensions = async () => {
 
     return Promise.all(
         extensions.map(name => installer.default(installer[name], forceDownload))
-    ).catch(console.log);
+    ).catch(debug);
 };
 
 const createWindow = async () => {

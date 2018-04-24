@@ -1,7 +1,8 @@
-import * as ExtPlaneJs from "extplanejs"
+import * as debug from "debug";
 import { EventEmitter } from "events";
-import { setTimeout, setInterval } from "timers";
-import { FlightDataPackInterface, FlightData } from "./FlightData";
+import * as ExtPlaneJs from "extplanejs";
+import { setInterval } from "timers";
+import { FlightData } from "./FlightData";
 
 export default class XplaneConnector extends EventEmitter {
 
@@ -17,7 +18,7 @@ export default class XplaneConnector extends EventEmitter {
 
     public connect() {
 
-        console.log("Connecting to XPlane")
+        debug("Connecting to XPlane")
 
         this.extPlaneJs = new ExtPlaneJs({
             host: '127.0.0.1',
@@ -27,7 +28,7 @@ export default class XplaneConnector extends EventEmitter {
 
         this.extPlaneJs.on("loaded", () => {
 
-            console.log("Connecter Loaded")
+            debug("Connecter Loaded")
 
             if (this.extPlaneJs) {
 
@@ -97,7 +98,7 @@ export default class XplaneConnector extends EventEmitter {
             this.emit("connected")
         }
 
-        console.log("Connection to XPlane status:", this.connected)
+        debug("Connection to XPlane status: "+ this.connected)
 
         this.emit("connectionchange")
     }
