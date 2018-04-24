@@ -68,7 +68,7 @@ class FlightDataStatic extends EventEmitter {
 
     }
 
-    public nearbyAiports() {
+    public nearbyAiports(maxRecords: number = 100) {
 
         const aiprortList = AirportIndex.data
         const yourPos = new LatLonVectors(this.data.lat, this.data.lon)
@@ -82,9 +82,8 @@ class FlightDataStatic extends EventEmitter {
             })
         });
 
-        console.log(resultList.sort(this.airportDistanceSort))
 
-        return resultList
+        return resultList.sort(this.airportDistanceSort).splice(0, maxRecords)
     }
 
     private airportDistanceSort(a: AirpotDistanceInterface, b: AirpotDistanceInterface) {
