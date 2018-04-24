@@ -1,23 +1,11 @@
 import * as ExtPlaneJs from "extplanejs"
 import { EventEmitter } from "events";
 import { setTimeout, setInterval } from "timers";
-
-
-export interface XplaneFlightData {
-    lat: number
-    lon: number
-    speed: number
-}
+import { FlightDataPackInterface, FlightData } from "./FlightData";
 
 export default class XplaneConnector extends EventEmitter {
 
     private extPlaneJs: ExtPlaneJs | undefined
-
-    public xplaneData: XplaneFlightData = {
-        lat: 0,
-        lon: 0,
-        speed: 0
-    }
 
     private lastUpdate = new Date()
 
@@ -49,24 +37,25 @@ export default class XplaneConnector extends EventEmitter {
 
                 this.extPlaneJs.on("data-ref", (dataRef, value) => {
 
+                    const currentData = FlightData.getData()
+
                     switch (dataRef) {
                         case "sim/cockpit2/gauges/indicators/airspeed_kts_pilot":
-                            this.xplaneData.speed = value
+                            currentData.speed = parseInt(value)
                             break;
                         case "sim/flightmodel/position/longitude":
-                            this.xplaneData.lon = value
+                            currentData.lon = parseFloat(value)
                             break;
                         case "sim/flightmodel/position/latitude":
-                            this.xplaneData.lat = value
+                            currentData.lat = parseFloat(value)
                             break;
-
                         default:
                             break;
                     }
 
-                    this.lastUpdate = new Date()
+                    FlightData.setData(currentData)
 
-                    this.emit("change", this.xplaneData)
+                    this.lastUpdate = new Date()
                 })
             }
         })
@@ -86,8 +75,6 @@ export default class XplaneConnector extends EventEmitter {
     public alive() {
 
         const now = new Date()
-
-        //console.log((now.getTime() - now.getTime()))
 
         if ((now.getTime() - this.lastUpdate.getTime()) >= 1000) {
             this.connected = false

@@ -3,7 +3,7 @@ import { Route, Switch } from "react-router-dom";
 import Details from "../Airport/Details";
 import Home from "../Pages/Home";
 import Settings from "../Settings/Settings";
-import InFlightInformation from "../Flight/InFlightInformation";
+import InFlightInformation from "../Pages/InFlightInformation";
 
 
 const Main = () => (

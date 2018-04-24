@@ -1,13 +1,14 @@
 import { LatLng, LeafletEvent } from 'leaflet';
 import * as React from 'react';
 import { CircleMarker, Map, TileLayer } from 'react-leaflet';
-import { Alert, Col, Row } from "reactstrap";
-import { XplaneEmmiter, XplaneFlightData } from "../../lib/XplaneConnector";
+import { Col, Row } from "reactstrap";
+import { FlightData, FlightDataPackInterface } from '../../lib/FlightData';
+import { XplaneEmmiter } from '../../lib/XplaneConnector';
 import "./InFlightMap.scss";
 
 
 export interface InFlightMapStates {
-    flightPos: XplaneFlightData
+    flightPos: FlightDataPackInterface
     zoom: number
     connected: boolean
 }
@@ -27,11 +28,10 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
         const zoom = parseInt(localStorage.getItem("lastZoomInFlightMap") || '13')
 
         this.state = {
-            flightPos: XplaneEmmiter.xplaneData,
             zoom: zoom,
+            flightPos: FlightData.getData(),            
             connected: XplaneEmmiter.connected
         }
-
 
         this.onZoom = this.onZoom.bind(this);
     }
@@ -44,7 +44,7 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
     public componentWillMount() {
         this.componentMounted = true
 
-        XplaneEmmiter.on("change", (currentData: XplaneFlightData) => {
+        FlightData.on("change", (currentData: FlightDataPackInterface) => {
             if (this.componentMounted) {
                 this.setState({ flightPos: currentData, connected: true });
             }

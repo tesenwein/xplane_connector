@@ -21,6 +21,7 @@ const createWindow = async () => {
     }
 
     win = new BrowserWindow({ width: 1024, height: 600 });
+    win.setTitle(require("../package.json").name)
 
     if (process.env.NODE_ENV !== 'production') {
         win.loadURL(`http://localhost:2003`);

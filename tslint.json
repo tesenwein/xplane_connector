@@ -22,7 +22,8 @@
         "jsx-no-string-ref": true,
         "jsx-self-close": true,
         "jsx-wrap-multiline": true,
-        "radix": false
+        "radix": false,
+        "object-literal-shorthand": false
     },
     "rulesDirectory": []
 }

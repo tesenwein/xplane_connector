@@ -1,8 +1,9 @@
 import { LatLonVectors } from "geodesy";
 import * as React from 'react';
 import AirportIndex from '../../lib/AirportIndex';
-import { XplaneEmmiter, XplaneFlightData } from '../../lib/XplaneConnector';
+import { XplaneEmmiter } from '../../lib/XplaneConnector';
 import { Row, Col, Alert } from "reactstrap"
+import { FlightDataPackInterface, FlightData } from "../../lib/FlightData";
 
 
 export interface ClosestAiprotsStates {
@@ -34,28 +35,16 @@ export default class ClosestAiprots extends React.Component<ClosestAiprotsProps,
 
         this.prepareIndex()
 
-        XplaneEmmiter.on("change", (geoCurrentData: XplaneFlightData) => {
-            this.setState({ connected: true })
+        FlightData.on("sig_postion", () => {
+            FlightData.nearbyAiports()
         })
 
     }
 
     public render() {
 
-        const ClosestAirpotsBox = this.state.connected ? (
-            <div>Closest Airprts</div>
-        ) : (
-                <Row>
-                    <Col>
-                        <Alert color="dark">Not Connected to XPlane</Alert>
-                    </Col>
-                </Row>
-            )
-
         return (
-            <div>
-                {ClosestAirpotsBox}
-            </div>
+             <div>Closest Airprts</div>
         );
     }
 }

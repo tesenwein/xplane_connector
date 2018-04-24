@@ -3,7 +3,7 @@ declare class ExtPlaneJs {
     constructor(options: ExtPlaneJs.ExtPlaneJsOptions);
 
     //on(event: "loaded", callback: Function): this
-    on(event: "data-ref", callback: (dataRef: string, value: any) => any): this
+    on(event: "data-ref", callback: (dataRef: string, value: string) => any): this
     on(event: string, callback: (error: Error | null, result: any | null) => void): this
 
     client: ExtPlaneJs.client

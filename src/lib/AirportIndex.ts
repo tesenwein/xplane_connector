@@ -8,7 +8,7 @@ export interface AirportIndexApt {
     distance: number | null
 }
 
-class AirportIndex {
+class AirportIndexStatic {
 
     public data: AirportIndexApt[] = []
 
@@ -52,5 +52,5 @@ class AirportIndex {
 
 }
 
-const AirportIndexDirectory = new AirportIndex()
-export default AirportIndexDirectory
+const AirportIndex = new AirportIndexStatic()
+export default AirportIndex
