@@ -1,8 +1,9 @@
 import * as React from "react";
 import { BrowserRouter } from "react-router-dom";
-import { Container, Row, Col } from "reactstrap";
+import { Col, Container, Row } from "reactstrap";
 import "./app.scss";
 import Header from "./components/Header/Header";
+import Loading from "./components/Misc/Loading";
 import Main from "./components/Pages/Main";
 import AirportIndex from "./lib/AirportIndex";
 import ConfigStore from "./lib/ConfigStore";
@@ -51,8 +52,8 @@ export default class App extends React.Component<AppProps, AppStates> {
         ) : (
                 <Container fluid={true} id="main-container">
                     <Row>
-                        <Col sm={{ size: 'auto', offset: 4 }}>
-                            Loading
+                        <Col sm={{ size: 'auto', offset: 4 }} id="mainLoading">
+                            <Loading />
                         </Col>
                     </Row>
                 </Container>

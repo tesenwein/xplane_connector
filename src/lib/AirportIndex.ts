@@ -1,5 +1,5 @@
 import { AirportInterface, AirportsDB } from "./Airport";
-import Debug from "../lib/Debug"
+
 
 export interface AirportIndexApt {
     icao: string
@@ -20,7 +20,7 @@ class AirportIndexStatic {
 
         const promises: Promise<boolean>[] = []
 
-        Debug.log("Building AirportIndex")
+        console.log("Building AirportIndex")
 
         this.data = []
 
@@ -45,7 +45,7 @@ class AirportIndexStatic {
         });
 
         Promise.all(promises).then(() => {
-            Debug.log("AirportIndex loaded with " + this.data.length + " Records")
+            console.log("AirportIndex loaded with " + this.data.length + " Records")
         })
         return Promise.all(promises)
     }

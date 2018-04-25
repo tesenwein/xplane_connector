@@ -8,10 +8,10 @@ import InFlightInformation from "../Pages/InFlightInformation";
 
 const Main = () => (
     <Switch>
-        <Route exact={true} path="/" component={Home} />
         <Route path="/inflight" component={InFlightInformation} />
         <Route path="/airport/:icao" component={Details} />
         <Route path="/settings" component={Settings} />
+        <Route path="/" component={Home}  />
     </Switch>
 );
 

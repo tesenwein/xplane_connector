@@ -1,7 +1,6 @@
-import * as debug from "debug"
-import { BrowserWindow, app } from 'electron'
-import * as path from 'path'
-import * as url from 'url'
+import { BrowserWindow, app } from 'electron';
+import * as path from 'path';
+import * as url from 'url';
 
 let win: BrowserWindow | null
 
@@ -12,19 +11,19 @@ const installExtensions = async () => {
 
     return Promise.all(
         extensions.map(name => installer.default(installer[name], forceDownload))
-    ).catch(debug);
+    ).catch(console.log);
 };
 
 const createWindow = async () => {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'production') {    
         await installExtensions();
     }
 
     win = new BrowserWindow({ width: 1024, height: 600 });
-    win.setTitle(require("../package.json").name)
+    win.setTitle("X-Plane Connector")
 
     if (process.env.NODE_ENV !== 'production') {
-        win.loadURL(`http://localhost:2003`);
+        win.loadURL(`http://localhost:2003/index.html`);
     } else {
         win.loadURL(
             url.format({

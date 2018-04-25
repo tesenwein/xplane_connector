@@ -1,7 +1,5 @@
 import * as PouchDB from 'pouchdb-browser';
 import { Debugger } from 'electron';
-import Debug from "../lib/Debug"
-
 
 export interface AirportInterface {
     _id: string
@@ -50,7 +48,7 @@ export default class Airport implements AirportInterface {
 
     public static async cleanDatabase(): Promise<boolean[]> {
 
-        Debug.log("Cleaning Database Airports")
+        console.log("Cleaning Database Airports")
 
         const promises: Promise<boolean>[] = []
 
