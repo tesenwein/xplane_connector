@@ -5,8 +5,6 @@ import "./Search.scss";
 import ShortInfo from "./ShortInfo";
 
 
-
-
 export interface SearchProps {
 }
 

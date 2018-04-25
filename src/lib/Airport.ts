@@ -8,7 +8,7 @@ export interface AirportInterface {
     name: string
     lat: number
     lon: number
-    freq?: string
+    freq: string
 }
 
 export default class Airport implements AirportInterface {
@@ -44,6 +44,22 @@ export default class Airport implements AirportInterface {
 
         return AirportsDB.find(searchConfig)
 
+    }
+
+    public async load():Promise<AirportInterface> {
+
+        const promise = AirportsDB.get<AirportInterface>(this._id)
+        
+        promise.then((doc) => {
+            this._id = doc._id
+            this.icao = doc.icao
+            this.name = doc.name
+            this.freq = doc.freq
+            this.lat = doc.lat
+            this.lon = doc.lon
+        })
+
+        return promise
     }
 
     public static async cleanDatabase(): Promise<boolean[]> {

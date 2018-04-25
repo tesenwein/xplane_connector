@@ -34,7 +34,10 @@ class AirportIndexStatic {
                             lat: doc.lat,
                             distance: null
                         }
-                        this.data.push(apt)
+
+                        if (apt.icao && apt.lon && apt.lat) {
+                            this.data.push(apt)
+                        }
                         resolveApt(true)
                     }).catch((e) => {
                         rejectApt(e)

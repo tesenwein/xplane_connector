@@ -52,7 +52,7 @@ export default class App extends React.Component<AppProps, AppStates> {
         ) : (
                 <Container fluid={true} id="main-container">
                     <Row>
-                        <Col sm={{ size: 'auto', offset: 4 }} id="mainLoading">
+                        <Col id="mainLoading">
                             <Loading />
                         </Col>
                     </Row>

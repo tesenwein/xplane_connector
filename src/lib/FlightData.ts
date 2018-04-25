@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
-import { AirportInterface } from "./Airport";
 import { LatLonVectors } from "geodesy";
-import AirportIndex from "./AirportIndex";
+import Airport, { AirportInterface } from "./Airport";
+import AirportIndex, { AirportIndexApt } from "./AirportIndex";
 
 export interface FlightDataPackInterface {
     lat: number
@@ -62,29 +62,59 @@ class FlightDataStatic extends EventEmitter {
         this.oldLon = curPos[1]
     }
 
-    public static trimLonLat(lat: number, lon: number, detailLevel: number) {
+    public trimLonLatAiprotsListByCurrentPostion(airportList: AirportIndexApt[]): AirportIndexApt[] {
+
+        const currentShortPos = FlightDataStatic.trimLonLat(this.data.lat, this.data.lon, 0)
+        const newList: AirportIndexApt[] = []
+
+
+        airportList.forEach((airport) => {
+            if ((airport.lat >= currentShortPos[0] - 1 && airport.lat <= currentShortPos[0] + 1) &&
+                (airport.lon >= currentShortPos[1] - 1 && airport.lon <= currentShortPos[1] + 1)) {
+                newList.push(airport)
+            }
+        })
+
+        return newList
+    }
+
+    public static trimLonLat(lat: number, lon: number, detailLevel: number = 3) {
 
         return [parseFloat(lat.toFixed(detailLevel)), parseFloat(lon.toFixed(detailLevel))]
 
     }
 
-    public nearbyAiports(maxRecords: number = 100) {
+    public async nearbyAiports(maxRecords: number = 100): Promise<AirportInterface[]> {
 
-        const aiprortList = AirportIndex.data
-        const yourPos = new LatLonVectors(this.data.lat, this.data.lon)
         const resultList: AirpotDistanceInterface[] = []
+        const yourPos = new LatLonVectors(this.data.lat, this.data.lon)
 
-
-        aiprortList.forEach(airport => {
+        this.trimLonLatAiprotsListByCurrentPostion(AirportIndex.data).forEach(airport => {
             resultList.push({
                 icao: airport.icao,
                 distance: yourPos.distanceTo(new LatLonVectors(airport.lat, airport.lon))
             })
         });
 
-
-        return resultList.sort(this.airportDistanceSort).splice(0, maxRecords)
+        return this.fromAirportDistanceToAirortList(resultList.sort(this.airportDistanceSort).slice(0,maxRecords))
     }
+
+    private async fromAirportDistanceToAirortList(aiportDistanceList: AirpotDistanceInterface[]): Promise<AirportInterface[]> {
+
+        const promises: Promise<AirportInterface>[] = []
+        const newAirportList: AirportInterface[] = []
+
+        aiportDistanceList.forEach(element => {
+            const apt = new Airport(element.icao).load()
+            apt.then((data) => {
+                newAirportList.push(data)
+            })
+            promises.push(apt)
+        });
+
+        return Promise.all(promises);
+    }
+
 
     private airportDistanceSort(a: AirpotDistanceInterface, b: AirpotDistanceInterface) {
         if (a.distance < b.distance)

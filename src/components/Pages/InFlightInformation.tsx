@@ -26,8 +26,8 @@ export default class InFlightInformation extends React.Component<InFlightInforma
         return (
             <div>
                 <CheckConnection />
-                <ClosestAirports />
                 <InFlightMap />
+                <ClosestAirports />
             </div>
         );
     }

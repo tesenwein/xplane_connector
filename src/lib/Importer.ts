@@ -34,7 +34,7 @@ export default class Importer {
                     promises.push(aptPromise)
                     aptPromise.then(() => {
                         lr.resume()
-                        console.log("Imported Airport " + apt.icao + apt.lat + apt.lon)
+                        console.log("Imported Airport ", apt.icao, apt.lat, apt.lon)
                     })
 
                     // get Dat information
