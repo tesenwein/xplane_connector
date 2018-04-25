@@ -49,7 +49,13 @@ export default class App extends React.Component<AppProps, AppStates> {
                 </Container>
             </div>
         ) : (
-                <div>Loading</div>
+                <Container fluid={true} id="main-container">
+                    <Row>
+                        <Col sm={{ size: 'auto', offset: 4 }}>
+                            Loading
+                        </Col>
+                    </Row>
+                </Container>
             )
 
         return (
