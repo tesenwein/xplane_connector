@@ -1,5 +1,4 @@
 import * as React from 'react';
-import ClosestAirports from "../Flight/ClosestAirports";
 import InFlightMap from "../Flight/InFlightMap";
 import CheckConnection from "../Settings/CheckConnection";
 import "./InFlightInformation.scss";
@@ -27,7 +26,6 @@ export default class InFlightInformation extends React.Component<InFlightInforma
             <div>
                 <CheckConnection />
                 <InFlightMap />
-                <ClosestAirports />
             </div>
         );
     }

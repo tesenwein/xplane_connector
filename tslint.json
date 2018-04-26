@@ -19,8 +19,8 @@
         "variable-name": false,
         "jsx-alignment": false,
         "jsx-equals-spacing": [true, "never"],
-        "jsx-no-string-ref": true,
         "jsx-self-close": true,
+        "jsx-no-string-ref": false,
         "jsx-wrap-multiline": true,
         "radix": false,
         "object-literal-shorthand": false

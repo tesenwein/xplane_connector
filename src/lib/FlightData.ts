@@ -62,15 +62,13 @@ class FlightDataStatic extends EventEmitter {
         this.oldLon = curPos[1]
     }
 
-    public trimLonLatAiprotsListByCurrentPostion(airportList: AirportIndexApt[]): AirportIndexApt[] {
+    public trimLonLatAiprotsListByCurrentPostion(northWestBoundry: number[], southEastBoundry: number[], airportList: AirportIndexApt[]): AirportIndexApt[] {
 
         const currentShortPos = FlightDataStatic.trimLonLat(this.data.lat, this.data.lon, 0)
         const newList: AirportIndexApt[] = []
 
-
         airportList.forEach((airport) => {
-            if ((airport.lat >= currentShortPos[0] - 1 && airport.lat <= currentShortPos[0] + 1) &&
-                (airport.lon >= currentShortPos[1] - 1 && airport.lon <= currentShortPos[1] + 1)) {
+            if (FlightDataStatic.isInBoundingBox(northWestBoundry, southEastBoundry, airport.lat, airport.lon)) {
                 newList.push(airport)
             }
         })
@@ -84,19 +82,19 @@ class FlightDataStatic extends EventEmitter {
 
     }
 
-    public async nearbyAiports(maxRecords: number = 100): Promise<AirportInterface[]> {
+    public async nearbyAiports(northWestBoundry: number[], southEastBoundry: number[], maxRecords: number = 100): Promise<AirportInterface[]> {
 
         const resultList: AirpotDistanceInterface[] = []
         const yourPos = new LatLonVectors(this.data.lat, this.data.lon)
 
-        this.trimLonLatAiprotsListByCurrentPostion(AirportIndex.data).forEach(airport => {
+        this.trimLonLatAiprotsListByCurrentPostion(northWestBoundry, southEastBoundry, AirportIndex.data).forEach(airport => {
             resultList.push({
                 icao: airport.icao,
                 distance: yourPos.distanceTo(new LatLonVectors(airport.lat, airport.lon))
             })
         });
 
-        return this.fromAirportDistanceToAirortList(resultList.sort(this.airportDistanceSort).slice(0,maxRecords))
+        return this.fromAirportDistanceToAirortList(resultList.sort(this.airportDistanceSort).slice(0, maxRecords))
     }
 
     private async fromAirportDistanceToAirortList(aiportDistanceList: AirpotDistanceInterface[]): Promise<AirportInterface[]> {
@@ -122,6 +120,19 @@ class FlightDataStatic extends EventEmitter {
         if (a.distance > b.distance)
             return 1;
         return 0;
+    }
+
+    public static isInBoundingBox(northWestBoundry: number[], southEastBoundry: number[], lat: number, lon: number) {
+
+
+        const minLat = Math.min(northWestBoundry[0], southEastBoundry[0])
+        const maxLat = Math.max(northWestBoundry[0], southEastBoundry[0])
+        const minLon = Math.min(northWestBoundry[1], southEastBoundry[1])
+        const maxLon = Math.max(northWestBoundry[1], southEastBoundry[1])
+
+        return lon >= minLon && lon <= maxLon && lat >= minLat && lat <= maxLat
+
+
     }
 
 }

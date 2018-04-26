@@ -1,25 +1,36 @@
-import { LatLng, LeafletEvent } from 'leaflet';
+
+import { Path } from "history";
+import { LatLng, LeafletEvent, LeafletMouseEvent } from 'leaflet';
 import * as React from 'react';
 import { CircleMarker, Map, TileLayer } from 'react-leaflet';
-import { Col, Row } from "reactstrap";
+import { Button, Col, Row } from "reactstrap";
+import { AirportInterface } from '../../lib/Airport';
 import { FlightData, FlightDataPackInterface } from '../../lib/FlightData';
 import { XplaneEmmiter } from '../../lib/XplaneConnector';
+import ShortInfo from "../Airport/ShortInfo";
 import "./InFlightMap.scss";
+import { Redirect } from "react-router";
 
 
 export interface InFlightMapStates {
-    flightPos: FlightDataPackInterface
+    planePos: LatLng
+    centerPos: LatLng
     zoom: number
+    isMapSticky: boolean
     connected: boolean
+    airports: AirportInterface[]
+    redirect: string | null
 }
 
 export interface InFlightMapProps {
 
 }
 
+
 export default class InFlightMap extends React.Component<InFlightMapProps, InFlightMapStates> {
 
-    public componentMounted: boolean = false;
+    private componentMounted: boolean = false;
+    private map: Map | null = null
 
     public constructor(props: InFlightMapProps) {
 
@@ -29,11 +40,32 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
 
         this.state = {
             zoom: zoom,
-            flightPos: FlightData.getData(),            
-            connected: XplaneEmmiter.connected
+            planePos: new LatLng(0, 0),
+            centerPos: new LatLng(0, 0),
+            isMapSticky: true,
+            connected: XplaneEmmiter.connected,
+            airports: [],
+            redirect: null
         }
 
+        this.onLoad = this.onLoad.bind(this);
         this.onZoom = this.onZoom.bind(this);
+        this.onDragStart = this.onDragStart.bind(this);
+        this.onSickyMap = this.onSickyMap.bind(this);
+        this.onMoveEnd = this.onMoveEnd.bind(this);
+    }
+
+    public onLoad(e: LeafletEvent) {
+        this.onMoveEnd(e)
+    }
+
+    public onDragStart(e: React.MouseEvent<any>) {
+        this.setState({ isMapSticky: false })
+    }
+
+    public onAirportClick(icao: string, e: LeafletMouseEvent) {
+        this.setState({ redirect: "/airport/" + icao })
+
     }
 
     public onZoom(e: LeafletEvent) {
@@ -41,15 +73,38 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
         this.setState({ zoom: e.target._zoom });
     }
 
+    public onSickyMap(e: React.MouseEvent<any>) {
+        this.setState({ isMapSticky: !this.state.isMapSticky })
+
+        if (!this.state.isMapSticky) {
+            this.setState({ centerPos: new LatLng(FlightData.getData().lat, FlightData.getData().lon) })
+        }
+    }
+
+    public onMoveEnd(e: LeafletEvent) {
+        if (this.componentMounted) {
+            if (this.map) {
+                const bounds = this.map.leafletElement.getBounds()
+                FlightData.nearbyAiports([bounds.getNorthWest().lat, bounds.getNorthWest().lng], [bounds.getSouthEast().lat, bounds.getSouthEast().lng]).then((airportList) => {
+                    this.setState({ airports: airportList })
+                })
+            }
+        }
+    }
+
     public componentWillMount() {
         this.componentMounted = true
 
         FlightData.on("change", (currentData: FlightDataPackInterface) => {
             if (this.componentMounted) {
-                this.setState({ flightPos: currentData, connected: true });
+                this.setState({ planePos: new LatLng(currentData.lat, currentData.lon), connected: true });
+                if (this.state.isMapSticky) {
+                    this.setState({ centerPos: this.state.planePos })
+                }
             }
         })
     }
+
 
     public componentWillUnmount() {
         this.componentMounted = false
@@ -57,24 +112,54 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
 
 
     public render() {
-        const position = new LatLng(this.state.flightPos.lat, this.state.flightPos.lon)
+
+        const rows: JSX.Element[] = []
+        const airportsMap: JSX.Element[] = []
+
+        let counter = 0
+
+        this.state.airports.map((airportItem) => {
+            rows.push(<ShortInfo key={airportItem.toString() + counter} airport={airportItem} />);
+            airportsMap.push(<CircleMarker onclick={this.onAirportClick.bind(this, airportItem.icao)} key={"apt_" + airportItem.toString() + counter} center={new LatLng(airportItem.lat, airportItem.lon)} color="green" radius={10} />)
+            counter = counter + 1
+        });
+
+        if(this.state.redirect){
+            return <Redirect to={this.state.redirect} />
+        }
 
         const CheckConnection = this.state.connected ? (
             <div>
                 <Row>
-                    <div className="col-sm">
-                        InFlightMap: {this.state.flightPos.lon} / {this.state.flightPos.lat}
-                    </div>
+                    <Col>
+                        InFlightMap: {this.state.planePos.lat} / {this.state.planePos.lat}
+                    </Col>
+                    <Col>
+                        <Button onClick={this.onSickyMap} />
+                    </Col>
                 </Row>
                 <Row>
                     <Col>
-                        <Map onzoomend={this.onZoom} className="mapWindow" center={position} zoom={this.state.zoom} >
+                        <Map ref={(map) => { if (map) this.map = map }}
+                            onload={this.onLoad}
+                            onmoveend={this.onMoveEnd}
+                            onzoomend={this.onZoom}
+                            ondragstart={this.onDragStart}
+                            className="mapWindow"
+                            center={this.state.centerPos}
+                            zoom={this.state.zoom} >
                             <TileLayer
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                 attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
                             />
-                            <CircleMarker center={position} color="red" radius={10} />
+                            <CircleMarker center={this.state.planePos} color="red" radius={10} />
+                            {airportsMap}
                         </Map>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        {rows}
                     </Col>
                 </Row>
             </div>
