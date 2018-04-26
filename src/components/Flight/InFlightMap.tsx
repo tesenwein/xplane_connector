@@ -1,18 +1,18 @@
 
-import { Path } from "history";
-import { LatLng, LeafletEvent, LeafletMouseEvent } from 'leaflet';
+import { LatLng, LeafletEvent, LeafletMouseEvent, Icon } from 'leaflet';
 import * as React from 'react';
-import { CircleMarker, Map, TileLayer } from 'react-leaflet';
-import { Button, Col, Row } from "reactstrap";
+import { CircleMarker, Map, TileLayer, Marker } from 'react-leaflet';
+import { Redirect } from "react-router";
+import { Button, Col, ListGroup, ListGroupItem, Row } from "reactstrap";
 import { AirportInterface } from '../../lib/Airport';
 import { FlightData, FlightDataPackInterface } from '../../lib/FlightData';
 import { XplaneEmmiter } from '../../lib/XplaneConnector';
 import ShortInfo from "../Airport/ShortInfo";
 import "./InFlightMap.scss";
-import { Redirect } from "react-router";
 
 
 export interface InFlightMapStates {
+    flightData: FlightDataPackInterface
     planePos: LatLng
     centerPos: LatLng
     zoom: number
@@ -38,7 +38,9 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
 
         const zoom = parseInt(localStorage.getItem("lastZoomInFlightMap") || '13')
 
+
         this.state = {
+            flightData: FlightData.getData(),
             zoom: zoom,
             planePos: new LatLng(0, 0),
             centerPos: new LatLng(0, 0),
@@ -94,15 +96,15 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
 
     public componentWillMount() {
         this.componentMounted = true
+        if (this.componentMounted) {
+            FlightData.on("change", (currentData: FlightDataPackInterface) => {
 
-        FlightData.on("change", (currentData: FlightDataPackInterface) => {
-            if (this.componentMounted) {
                 this.setState({ planePos: new LatLng(currentData.lat, currentData.lon), connected: true });
                 if (this.state.isMapSticky) {
                     this.setState({ centerPos: this.state.planePos })
                 }
-            }
-        })
+            })
+        }
     }
 
 
@@ -116,16 +118,28 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
         const rows: JSX.Element[] = []
         const airportsMap: JSX.Element[] = []
 
+
+        const planeStyle: React.CSSProperties = {
+            transform: "rotate(" + this.state.flightData.heading + "deg)"
+        }
+
+        const planeIcon = new Icon({
+            iconUrl: require("../../../assets/images/plane_icon.png"),
+            iconSize: [20, 20],
+            iconAnchor: [10, 10],
+            style: planeStyle
+        })
+
         let counter = 0
 
         this.state.airports.map((airportItem) => {
-            rows.push(<ShortInfo key={airportItem.toString() + counter} airport={airportItem} />);
+            rows.push(<ListGroupItem key={"list_" + airportItem.toString() + counter} ><ShortInfo key={airportItem.toString() + counter} airport={airportItem} /></ListGroupItem>);
             airportsMap.push(<CircleMarker onclick={this.onAirportClick.bind(this, airportItem.icao)} key={"apt_" + airportItem.toString() + counter} center={new LatLng(airportItem.lat, airportItem.lon)} color="green" radius={10} />)
             counter = counter + 1
         });
 
-        if(this.state.redirect){
-            return <Redirect to={this.state.redirect} />
+        if (this.state.redirect) {
+            return <Redirect push={true} to={this.state.redirect} />
         }
 
         const CheckConnection = this.state.connected ? (
@@ -140,7 +154,7 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
                 </Row>
                 <Row>
                     <Col>
-                        <Map ref={(map) => { if (map) this.map = map }}
+                        <Map id="mainMap" ref={(map) => { if (map) this.map = map }}
                             onload={this.onLoad}
                             onmoveend={this.onMoveEnd}
                             onzoomend={this.onZoom}
@@ -152,14 +166,22 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                 attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
                             />
-                            <CircleMarker center={this.state.planePos} color="red" radius={10} />
+                            <Marker icon={planeIcon} position={this.state.planePos} />
+
                             {airportsMap}
                         </Map>
                     </Col>
                 </Row>
                 <Row>
                     <Col>
-                        {rows}
+                        <h5>Nearby Aiports:</h5>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <ListGroup>
+                            {rows}
+                        </ListGroup>
                     </Col>
                 </Row>
             </div>

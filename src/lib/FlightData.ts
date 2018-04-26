@@ -7,6 +7,7 @@ export interface FlightDataPackInterface {
     lat: number
     lon: number
     speed: number
+    heading: number
 }
 
 export interface AirpotDistanceInterface {
@@ -28,13 +29,14 @@ class FlightDataStatic extends EventEmitter {
         this.data = {
             lon: 0,
             lat: 0,
-            speed: 0
+            speed: 0,
+            heading: 0
         }
 
         this.previousData = this.data;
     }
 
-    public getData() {
+    public getData():FlightDataPackInterface {
 
         return this.data
     }

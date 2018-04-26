@@ -44,6 +44,7 @@ export default class XplaneConnector extends EventEmitter {
                 this.extPlaneJs.client.subscribe("sim/cockpit2/gauges/indicators/airspeed_kts_pilot")
                 this.extPlaneJs.client.subscribe("sim/flightmodel/position/latitude")
                 this.extPlaneJs.client.subscribe("sim/flightmodel/position/longitude")
+                this.extPlaneJs.client.subscribe("sim/flightmodel/position/psi")
 
                 this.extPlaneJs.client.subscribe("sim/time/sim_speed")
 
@@ -60,6 +61,9 @@ export default class XplaneConnector extends EventEmitter {
                             break;
                         case "sim/flightmodel/position/latitude":
                             currentData.lat = parseFloat(value)
+                            break;
+                        case "sim/flightmodel/position/psi":
+                            currentData.heading = parseFloat(value)
                             break;
                         case "sim/time/sim_speed":
                             if (parseInt(value) < 1) {
@@ -118,6 +122,7 @@ export default class XplaneConnector extends EventEmitter {
 
         currentData.lat = 47.451625
         currentData.lon = 8.556830
+        currentData.heading = 45
 
         setInterval(() => {
             currentData.lat += 0.0001

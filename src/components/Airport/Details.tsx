@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { RouteComponentProps } from "react-router";
-
+import { RouteComponentProps, Redirect } from "react-router";
+import { Button } from "reactstrap"
+import * as H from 'history';
 
 
 export interface DetailsUrlParams{
@@ -18,16 +19,19 @@ export default class Details extends React.Component<DetailsProps, DetailsStates
 
     public constructor(props:DetailsProps){
         super(props)
+        this.onClickBack = this.onClickBack.bind(this)
+    }
 
-        console.log(this.props.match.params.icao)
+    private onClickBack(){
+        this.props.history.goBack()
     }
 
     public render() {
 
-        
 
         return (
             <div>
+                <Button onClick={this.onClickBack}>Back</Button>
                 Details
             </div>
         );
