@@ -1,14 +1,18 @@
 
-import { LatLng, LeafletEvent, LeafletMouseEvent, Icon } from 'leaflet';
+import { Icon, LatLng, LeafletEvent, LeafletMouseEvent } from 'leaflet';
 import * as React from 'react';
-import { CircleMarker, Map, TileLayer, Marker } from 'react-leaflet';
+import { CircleMarker, Map, TileLayer } from 'react-leaflet';
+import RotatedMarker from "react-leaflet-rotatedmarker";
 import { Redirect } from "react-router";
-import { Button, Col, ListGroup, ListGroupItem, Row } from "reactstrap";
+import Toggle from "react-toggle";
+import { Col, ListGroup, ListGroupItem, ListGroupItemHeading, Row } from "reactstrap";
 import { AirportInterface } from '../../lib/Airport';
 import { FlightData, FlightDataPackInterface } from '../../lib/FlightData';
 import { XplaneEmmiter } from '../../lib/XplaneConnector';
+import * as MdIconPack from 'react-icons/lib/md'
 import ShortInfo from "../Airport/ShortInfo";
 import "./InFlightMap.scss";
+import "react-toggle/style.css"
 
 
 export interface InFlightMapStates {
@@ -31,13 +35,13 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
 
     private componentMounted: boolean = false;
     private map: Map | null = null
+    private stickyToggleSwitch: Toggle | null = null
 
     public constructor(props: InFlightMapProps) {
 
         super(props)
 
         const zoom = parseInt(localStorage.getItem("lastZoomInFlightMap") || '13')
-
 
         this.state = {
             flightData: FlightData.getData(),
@@ -53,7 +57,7 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
         this.onLoad = this.onLoad.bind(this);
         this.onZoom = this.onZoom.bind(this);
         this.onDragStart = this.onDragStart.bind(this);
-        this.onSickyMap = this.onSickyMap.bind(this);
+        this.onStickyMap = this.onStickyMap.bind(this);
         this.onMoveEnd = this.onMoveEnd.bind(this);
     }
 
@@ -62,7 +66,9 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
     }
 
     public onDragStart(e: React.MouseEvent<any>) {
-        this.setState({ isMapSticky: false })
+        if (this.state.isMapSticky) {
+            this.setState({ isMapSticky: !this.state.isMapSticky })
+        }
     }
 
     public onAirportClick(icao: string, e: LeafletMouseEvent) {
@@ -75,7 +81,8 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
         this.setState({ zoom: e.target._zoom });
     }
 
-    public onSickyMap(e: React.MouseEvent<any>) {
+    public onStickyMap(e: React.ChangeEvent<HTMLInputElement>) {
+
         this.setState({ isMapSticky: !this.state.isMapSticky })
 
         if (!this.state.isMapSticky) {
@@ -125,10 +132,11 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
 
         const planeIcon = new Icon({
             iconUrl: require("../../../assets/images/plane_icon.png"),
-            iconSize: [20, 20],
-            iconAnchor: [10, 10],
+            iconSize: [30, 30],
+            iconAnchor: [15, 15],
             style: planeStyle
         })
+
 
         let counter = 0
 
@@ -146,10 +154,19 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
             <div>
                 <Row>
                     <Col>
-                        InFlightMap: {this.state.planePos.lat} / {this.state.planePos.lat}
+                        {this.state.planePos.lat.toFixed(4)} / {this.state.planePos.lat.toFixed(4)}
                     </Col>
-                    <Col>
-                        <Button onClick={this.onSickyMap} />
+                    <Col sm={6} className="text-right">
+                        <label>
+                            <Toggle
+                                ref={(toggle) => { this.stickyToggleSwitch = toggle }}
+                                checked={this.state.isMapSticky}
+                                onChange={this.onStickyMap}
+                                icons={{
+                                    checked: <MdIconPack.MdAirplanemodeActive size={14} color="white" />,
+                                    unchecked: null,
+                                }} />
+                        </label>
                     </Col>
                 </Row>
                 <Row>
@@ -166,7 +183,8 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                 attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
                             />
-                            <Marker icon={planeIcon} position={this.state.planePos} />
+
+                            <RotatedMarker rotationAngle={this.state.flightData.heading} icon={planeIcon} position={this.state.planePos} />
 
                             {airportsMap}
                         </Map>
@@ -174,12 +192,10 @@ export default class InFlightMap extends React.Component<InFlightMapProps, InFli
                 </Row>
                 <Row>
                     <Col>
-                        <h5>Nearby Aiports:</h5>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
                         <ListGroup>
+                            <ListGroupItemHeading>
+                                Nearby Aiprots
+                            </ListGroupItemHeading>
                             {rows}
                         </ListGroup>
                     </Col>

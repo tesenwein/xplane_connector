@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Col, Form, FormGroup, Input, Label, Row } from "reactstrap";
+import { Col, Form, FormGroup, Input, Label, Row, ListGroupItemHeading, ListGroupItem, ListGroup } from "reactstrap";
 import Airport, { AirportInterface } from "../../lib/Airport";
 import "./Search.scss";
 import ShortInfo from "./ShortInfo";
@@ -27,7 +27,7 @@ export default class Search extends React.Component<SearchProps, SearchState> {
             airports: []
         }
 
-        if(this.state.searchstring.length > 2){
+        if (this.state.searchstring.length > 2) {
             this.searchAirports()
         }
     }
@@ -58,8 +58,8 @@ export default class Search extends React.Component<SearchProps, SearchState> {
         let counter = 0;
 
         this.state.airports.map((airportItem) => {
-            rows.push(<ShortInfo key={airportItem.toString()+counter} airport={airportItem} />);
-            counter = counter + 1 
+            rows.push(<ListGroupItem key={"title_" + airportItem.toString() + counter}><ShortInfo key={airportItem.toString() + counter} airport={airportItem} /></ListGroupItem>);
+            counter = counter + 1
         });
 
         return (
@@ -82,7 +82,12 @@ export default class Search extends React.Component<SearchProps, SearchState> {
                 </Row>
                 <Row>
                     <Col>
-                        {rows}
+                        <ListGroup>
+                            <ListGroupItemHeading>
+                                Results
+                            </ListGroupItemHeading>
+                            {rows}
+                        </ListGroup>
                     </Col>
                 </Row>
             </div>

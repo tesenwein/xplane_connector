@@ -9,16 +9,20 @@
     "rules": {
         "max-line-length": false,
         "trailing-comma": false,
+        "import-name": false,
         "ter-indent": [
-            true, 
-            4, 
+            true,
+            4,
             {
                 "SwitchCase": 1
             }
         ],
         "variable-name": false,
         "jsx-alignment": false,
-        "jsx-equals-spacing": [true, "never"],
+        "jsx-equals-spacing": [
+            true,
+            "never"
+        ],
         "jsx-self-close": true,
         "jsx-no-string-ref": false,
         "jsx-wrap-multiline": true,
